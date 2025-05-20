@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "bd5ad8263c344691",
+        "id": "635d716eb852c314",
         "type": "tabs",
         "children": [
           {
-            "id": "1b5cc8b32ee8c5fb",
+            "id": "123a00b09873d46d",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "👥 Usuarios/Perfiles/admin.md",
+                "file": "🧑‍💻 UserStories/CU01_gestionar_propietarios.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "admin"
+              "title": "CU01_gestionar_propietarios"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "👥 Usuarios/Perfiles/admin.md",
+                "file": "🧑‍💻 UserStories/CU01_gestionar_propietarios.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for admin"
+              "title": "Backlinks for CU01_gestionar_propietarios"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "👥 Usuarios/Perfiles/admin.md",
+                "file": "🧑‍💻 UserStories/CU01_gestionar_propietarios.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from admin"
+              "title": "Outgoing links from CU01_gestionar_propietarios"
             }
           },
           {
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "👥 Usuarios/Perfiles/admin.md",
+                "file": "🧑‍💻 UserStories/CU01_gestionar_propietarios.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of admin"
+              "title": "Outline of CU01_gestionar_propietarios"
             }
           }
         ]
@@ -168,12 +168,16 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "1b5cc8b32ee8c5fb",
+  "active": "123a00b09873d46d",
   "lastOpenFiles": [
+    "🧑‍💻 UserStories/CU03_gestionar_inquilinos.md",
+    "📄 CasosDeUso/CU03_gestionar_inquilinos.md",
+    "Untitled.canvas",
+    "👥 Usuarios/contador.md",
+    "👥 Usuarios/Perfiles/contador.md",
+    "👥 Usuarios/Perfiles/admin.md",
     "👥 Usuarios/propietario.md",
     "👥 Usuarios/inquilino.md",
-    "👥 Usuarios/contador.md",
-    "👥 Usuarios/Perfiles/admin.md",
     "🧑‍💻 UserStories/CU05_gestionar_contratos.md"
   ]
 }
