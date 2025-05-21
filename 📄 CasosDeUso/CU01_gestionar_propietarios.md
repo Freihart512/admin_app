@@ -1,11 +1,20 @@
 ### 🔸 CU01 - Gestionar propietarios
 
-- US01: Como admin, quiero registrar un nuevo propietario con sus datos fiscales y de contacto, para poder asociarle propiedades.
-- US02: Como admin, quiero editar o desactivar propietarios existentes, para mantener datos actualizados.
-- US03: Como propietario, quiero acceder a un panel donde vea todas mis propiedades, sus estados y contratos activos.
+- [[🧑‍💻 UserStories/US01_registrar_nuevo_propietario]]: Registrar nuevo propietario
+- [[🧑‍💻 UserStories/US02_editar_desactivar_propietario]]: Editar o desactivar propietario
+- [[🧑‍💻 UserStories/US03_panel_propietario]]: Ver propiedades y contratos (Panel propietario)
 
 ---
+
 
 ### 📎 Enlaces relacionados
 - [[🧑‍💻 UserStories/todas_las_userstories]]
 - [[👥 Usuarios/perfiles]]
+
+### 🏠 Entidades Relacionadas
+- [[🏠 Entidades/propiedad]]
+- [[🏠 Entidades/contrato]]
+
+### 👥 Roles Relacionados
+- [[👥 Usuarios/admin]]
+- [[👥 Usuarios/propietario]]
