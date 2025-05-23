@@ -21,10 +21,9 @@ A formal one-year agreement between a Propietario and a single Inquilino for the
 ### Ciclo de Vida
 - A contract is initially created with `status: 'activo'`.
 - Upon reaching its `end_date`, the status automatically changes to `status: 'expired'`.
-- An admin can manually set the status to `status: 'finalizado'` before the `end_date`.
+- An admin can manually set the status to `status: 'eliminado'` before the `end_date`.
 - If a contract is soft-deleted (`deleted_at` is set), it should be filtered out of active listings by default, and any future associated Payments and Invoices that have not been generated yet should be cancelled or marked as invalid.
 
-### 🔁 Casos de Uso Relacionados
 ## Historial de Cambios
 
 Se deberá implementar un mecanismo para registrar y consultar el historial de modificaciones realizadas en los datos de un contrato. Esto incluirá la fecha del cambio, el usuario que realizó la modificación y los detalles de los campos afectados.
@@ -40,10 +39,10 @@ Además del estado "activo" y "finalizado", se añade el estado "próximo a venc
 
 
 ### 🔁 Casos de Uso Relacionados
-- [[📄 CasosDeUso/CU06_facturacion_automatica]]
-- [[📄 CasosDeUso/CU08_resumen_historial]]
 - [[📄 CasosDeUso/CU01_gestionar_propietarios]]
 - [[📄 CasosDeUso/CU05_gestionar_contratos]]
+- [[📄 CasosDeUso/CU06_facturacion_automatica]]
+- [[📄 CasosDeUso/CU08_resumen_historial]]
 
 ### 🧑‍💻 User Stories Relacionadas
 - [[🧑‍💻 UserStories/US03_panel_propietario]]
