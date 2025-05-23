@@ -21,9 +21,9 @@
 - [[📄 CasosDeUso/CU08_resumen_historial]]
 
 ### 🧑‍💻 User Stories Relacionadas
- - [[🧑‍💻 UserStories/US14_CU06_generar_facturas_automáticamente]]
-- [[🧑‍💻 UserStories/US19_CU08_consultar_resúmenes_e_historial]]
-- [[🧑‍💻 UserStories/US18_CU08_consultar_resúmenes_e_historial]]
+ - [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
+- [[🧑‍💻 UserStories/US19_listar_facturas]]
+- [[🧑‍💻 UserStories/US18_reporte_financiero]]
 
 ### 👥 Roles Relacionados
  - [[👥 Usuarios/propietario]]

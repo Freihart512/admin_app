@@ -26,11 +26,11 @@ A formal one-year agreement between a Propietario and a single Inquilino for the
 ### 🧑‍💻 User Stories Relacionadas
 - [[🧑‍💻 UserStories/US03_CU01_gestionar_propietarios]]
 - [[🧑‍💻 UserStories/US10_CU05_gestionar_contratos]]
-- [[🧑‍💻 UserStories/US11_CU05_gestionar_contratos]]
-- [[🧑‍💻 UserStories/US12_CU05_gestionar_contratos]]
-- [[🧑‍💻 UserStories/US13_CU05_gestionar_contratos]]
-- [[🧑‍💻 UserStories/US14_CU06_generar_facturas_automáticamente]]
-- [[🧑‍💻 UserStories/US19_CU08_consultar_resúmenes_e_historial]]
+- [[🧑‍💻 UserStories/US011_registrar_nuevo_contrato]]
+- [[🧑‍💻 UserStories/US12_editar_contrato]]
+- [[🧑‍💻 UserStories/US13_finalizar_contrato]]
+- [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
+- [[🧑‍💻 UserStories/US19_listar_facturas]]
 
 ### 👥 Roles Relacionados
 - [[👥 Usuarios/admin]]

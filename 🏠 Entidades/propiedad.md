@@ -22,14 +22,14 @@ A physical location owned by a Propietario that can be rented to an Inquilino vi
 
 ### 🧑‍💻 User Stories Relacionadas
 - [[🧑‍💻 UserStories/US03_CU01_gestionar_propietarios]]
-- [[🧑‍💻 UserStories/US04_CU02_gestionar_propiedades]]
-- [[🧑‍💻 UserStories/US05_CU02_gestionar_propiedades]]
-- [[🧑‍💻 UserStories/US06_CU02_gestionar_propiedades]]
-- [[🧑‍💻 UserStories/US11_CU05_gestionar_contratos]]
-- [[🧑‍💻 UserStories/US14_CU06_generar_facturas_automáticamente]]
-- [[🧑‍💻 UserStories/US15_CU06_generar_facturas_automáticamente]]
-- [[🧑‍💻 UserStories/US18_CU08_consultar_resúmenes_e_historial]]
-- [[🧑‍💻 UserStories/US20_CU08_consultar_resúmenes_e_historial]]
+- [[🧑‍💻 UserStories/US04_registrar_nueva_propiedad]]
+- [[🧑‍💻 UserStories/US05_listar_propiedades]]
+- [[🧑‍💻 UserStories/US06_listar_propiedades_admin]]
+- [[🧑‍💻 UserStories/US011_registrar_nuevo_contrato]]
+- [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
+- [[🧑‍💻 UserStories/US15_listar_facturas]]
+- [[🧑‍💻 UserStories/US18_reporte_financiero]]
+- [[🧑‍💻 UserStories/US20_listar_facturas_admin]]
 
 ### 👥 Roles Relacionados
 - [[👥 Usuarios/propietario]]
