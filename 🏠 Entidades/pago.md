@@ -25,14 +25,9 @@ A `Pago` record is typically created automatically when a `Contrato` is activate
 - [[📄 CasosDeUso/CU08_resumen_historial]]
 
 ### 🧑‍💻 User Stories Relacionadas
-- [[🧑‍💻 UserStories/US14_CU06_generar_facturas_automáticamente]]: Relacionado con la creación automática de pagos que desencadenan facturas.
-- [[🧑‍💻 UserStories/US18_CU08_consultar_resúmenes_e_historial]]: Utiliza datos de pagos para calcular resúmenes de ingresos.
-- [[🧑‍💻 UserStories/US19_CU08_consultar_resúmenes_e_historial]]
-
-### Validaciones Clave
-
-- The `amount` must be a positive value.
-- The `due_date` must be a valid date.
+ - [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
+- [[🧑‍💻 UserStories/US19_listar_facturas]]
+- [[🧑‍💻 UserStories/US18_reporte_financiero]]
 
 ### 👥 Roles Relacionados
  - [[👥 Usuarios/propietario]]
