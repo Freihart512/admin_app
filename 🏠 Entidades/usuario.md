@@ -4,17 +4,17 @@ Representa un usuario del sistema con credenciales de acceso y un rol asignado (
 
 ### Propiedades del Sistema
 
-- `user_id` (Unique Identifier): Un identificador único generado por el sistema para el usuario.
+- `user_id` (Identificador Único): Un identificador único generado por el sistema para el usuario.
 - `username`: Nombre de usuario único utilizado para el inicio de sesión.
 - `password_hash`: El hash seguro de la contraseña del usuario.
 - `role`: El rol asignado al usuario (e.g., 'admin', 'propietario', 'inquilino', 'contador').
 - `email`: Dirección de correo electrónico del usuario, utilizada para notificaciones y posiblemente recuperación de contraseña.
-- `associated_entity_id` (Foreign Key, Optional): Un enlace opcional al ID de la entidad específica asociada con este usuario (ej. `owner_id` para un Propietario, `tenant_id` para un Inquilino, `contador_id` para un Contador).
+- `associated_entity_id` (Clave Foránea, Opcional): Un enlace opcional al ID de la entidad específica asociada con este usuario (ej. `owner_id` para un Propietario, `tenant_id` para un Inquilino, `contador_id` para un Contador).
 - `is_active`: Un indicador booleano para determinar si la cuenta del usuario está activa.
-- `last_login_at` (Timestamp, Optional): Marca de tiempo del último inicio de sesión del usuario.
+- `last_login_at` (Marca de Tiempo, Opcional): Marca de tiempo del último inicio de sesión del usuario.
 - `created_at`: Marca de tiempo de cuándo se creó el registro del usuario.
 - `updated_at`: Marca de tiempo de cuándo se actualizó por última vez el registro del usuario.
-- `deleted_at` (Timestamp, Optional): Marca de tiempo de cuándo se marcó el registro del usuario como eliminado (soft delete).
+- `deleted_at` (Marca de Tiempo, Opcional): Marca de tiempo de cuándo se marcó el registro del usuario como eliminado (soft delete).
 
 ### Ciclo de Vida Típico
 
@@ -34,8 +34,7 @@ Al crearse un usuario con rol 'Propietario', se desencadena el envío de una not
 ### Validaciones Clave
 
 - `username` debe ser único.
-- `email` debe tener un formato válido y ser único (opcionalmente).
-- `role` debe ser uno de los roles predefinidos.
+- `email` debe tener un formato válido y ser único (opcionalmente).\n- `role` debe ser uno de los roles predefinidos.
 - `associated_entity_id` debe hacer referencia a una entidad existente del tipo correcto según el `role`.
 
 ---
@@ -46,10 +45,49 @@ Las relaciones de la entidad `Usuario` con otras entidades dependen del `role` a
 
 - **Admin:**
     - Puede gestionar la mayoría de las [[🏠 Entidades/entidades]].
-    - Puede ser el [[🏠 Entidades/usuario]] registrado en un [[🏠 Entidades/log]] por acciones de administración.\n    - Recibe [[🏠 Entidades/notificacion]] de alerta del sistema (ej. fallo de timbrado de [[🏠 Entidades/factura]] ).
+    - Puede ser el [[🏠 Entidades/usuario]] registrado en un [[🏠 Entidades/log]] por acciones de administración.
+    - Recibe [[🏠 Entidades/notificacion]] de alerta del sistema (ej. fallo de timbrado de [[🏠 Entidades/factura]] ).
 
 - **Propietario:**
     - Tiene una o más [[🏠 Entidades/propiedad|propiedad]] (relación uno a muchos).
     - Está asociado a los [[🏠 Entidades/contrato|contrato]] creados para sus propiedades (relación indirecta a través de [[🏠 Entidades/propiedad|propiedad]] ).
     - Puede tener un [[👥 Usuarios/contador]] asociado para fines fiscales (relación uno a uno).
-    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus propiedades y contratos (ej. [[🏠 Entidades/factura|factura]] generada, [[🏠 Entidades/pago|pago]] vencido).\n    - Puede ver [[🏠 Entidades/factura]] y [[🏠 Entidades/pago]] relacionados con sus propiedades/contratos.\n\n- **Inquilino:**\n    - Está asociado a uno o más [[🏠 Entidades/contrato|contrato]] (relación uno a muchos, aunque V1.0 limita a un inquilino por contrato).\n    - Es el sujeto principal de los [[🏠 Entidades/pago|pago]] definidos en sus contratos.\n    - Es el destinatario de las [[🏠 Entidades/factura|factura]] generadas a partir de sus pagos.\n    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus contratos, pagos y facturas.\n\n- **Contador:**\n    - Puede estar asociado a uno o más [[👥 Usuarios/propietario]] para recibir notificaciones fiscales (relación uno a muchos, aunque en V1.0 se implementará como uno a uno: un propietario puede tener un contador).\n    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con las [[🏠 Entidades/factura|factura]] de los propietarios a los que está asociado.\n\n### 🔁 Casos de Uso Relacionados\n- [[📄 CasosDeUso/CU01_gestionar_propietarios|CU01_gestionar_propietarios]]\n- [[📄 CasosDeUso/CU03_gestionar_inquilinos|CU03_gestionar_inquilinos]]\n- [[📄 CasosDeUso/CU04_gestionar_contadores|CU04_gestionar_contadores]]\n- [[📄 CasosDeUso/CU11_usuarios_y_accesos|CU11_usuarios_y_accesos]]\n\n### 🧑‍💻 User Stories Relacionadas\n- [[🧑‍💻 UserStories/US01_registrar_nuevo_propietario]]\n- [[🧑‍💻 UserStories/US07_CU03_gestionar_inquilinos]]\n- [[🧑‍💻 UserStories/US09_CU04_gestionar_contadores]]\n- [[🧑‍💻 UserStories/US25_CU11_gestionar_accesos_y_credenciales]]\n- [[🧑‍💻 UserStories/US26_CU11_gestionar_accesos_y_credenciales]]\n\n### 👥 Roles Relacionados\n- [[👥 Usuarios/admin]]\n- [[👥 Usuarios/propietario]]\n- [[👥 Usuarios/inquilino]]\n- [[👥 Usuarios/contador]]\n\n### 🏠 Entidades Relacionadas\n- [[🏠 Entidades/propiedad]]\n- [[🏠 Entidades/contrato]]\n- [[🏠 Entidades/factura]]\n- [[🏠 Entidades/pago]]\n- [[🏠 Entidades/notificacion]]\n- [[🏠 Entidades/log]]\n
+    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus propiedades y contratos (ej. [[🏠 Entidades/factura|factura]] generada, [[🏠 Entidades/pago|pago]] vencido).
+    - Puede ver [[🏠 Entidades/factura]] y [[🏠 Entidades/pago]] relacionados con sus propiedades/contratos.
+
+- **Inquilino:**
+    - Está asociado a uno o más [[🏠 Entidades/contrato|contrato]] (relación uno a muchos, aunque V1.0 limita a un inquilino por contrato).
+    - Es el sujeto principal de los [[🏠 Entidades/pago|pago]] definidos en sus contratos.
+    - Es el destinatario de las [[🏠 Entidades/factura|factura]] generadas a partir de sus pagos.
+    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus contratos, pagos y facturas.
+
+- **Contador:**
+    - Puede estar asociado a uno o más [[👥 Usuarios/propietario]] para recibir notificaciones fiscales (relación uno a muchos, aunque en V1.0 se implementará como uno a uno: un propietario puede tener un contador).
+    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con las [[🏠 Entidades/factura|factura]] de los propietarios a los que está asociado.
+
+### 🔁 Casos de Uso Relacionados
+- [[📄 CasosDeUso/CU01_gestionar_propietarios|CU01_gestionar_propietarios]]
+- [[📄 CasosDeUso/CU03_gestionar_inquilinos|CU03_gestionar_inquilinos]]
+- [[📄 CasosDeUso/CU04_gestionar_contadores|CU04_gestionar_contadores]]
+- [[📄 CasosDeUso/CU11_usuarios_y_accesos|CU11_usuarios_y_accesos]]
+
+### 🧑‍💻 User Stories Relacionadas
+- [[🧑‍💻 UserStories/US01_registrar_nuevo_propietario]]
+- [[🧑‍💻 UserStories/US07_CU03_gestionar_inquilinos]]
+- [[🧑‍💻 UserStories/US09_CU04_gestionar_contadores]]
+- [[🧑‍💻 UserStories/US25_CU11_gestionar_accesos_y_credenciales]]
+- [[🧑‍💻 UserStories/US26_CU11_gestionar_accesos_y_credenciales]]
+
+### 👥 Roles Relacionados
+- [[👥 Usuarios/admin]]
+- [[👥 Usuarios/propietario]]
+- [[👥 Usuarios/inquilino]]
+- [[👥 Usuarios/contador]]
+
+### 🏠 Entidades Relacionadas
+- [[🏠 Entidades/propiedad]]
+- [[🏠 Entidades/contrato]]
+- [[🏠 Entidades/factura]]
+- [[🏠 Entidades/pago]]
+- [[🏠 Entidades/notificacion]]
+- [[🏠 Entidades/log]]

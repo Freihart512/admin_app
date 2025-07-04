@@ -1,34 +1,34 @@
 ## Entidad: Propiedad
 
-A physical location owned by a Propietario that can be rented to an Inquilino via a Contrato.
+Una ubicación física propiedad de un Propietario que puede ser rentada a un Inquilino a través de un Contrato.
 
 ---
 
 ### Propiedades del Sistema
 
-- `property_id` (Unique Identifier): A unique system-generated identifier for the property.
-- `owner_id` (Foreign Key): A foreign key linking to the unique identifier of the owner who owns this property.
-- `address`: The full physical address of the property.
-- `features` (JSON, Optional): Structured data describing the property, such as number of bedrooms, bathrooms, square footage, amenities, etc.
-- `status`: The current rental status of the property (e.g., 'vacía', 'rentada').
-- `created_at`: A system timestamp indicating the exact date and time the property record was created.
-- `deleted_at` (Timestamp, Optional): A system timestamp indicating the exact date and time the property record was soft-deleted, if applicable.
+- `property_id` (Identificador Único): Un identificador único generado por el sistema para la propiedad.
+- `owner_id` (Clave Foránea): Una clave foránea que enlaza al identificador único del propietario que posee esta propiedad.
+- `address`: La dirección física completa de la propiedad.
+- `features` (JSON, Opcional): Datos estructurados que describen la propiedad, como número de habitaciones, baños, metros cuadrados, comodidades, etc.
+- `status`: El estado de alquiler actual de la propiedad (ej. 'vacía', 'rentada').
+- `created_at`: Una marca de tiempo del sistema que indica la fecha y hora exactas en que se creó el registro de la propiedad.
+- `deleted_at` (Marca de Tiempo, Opcional): Una marca de tiempo del sistema que indica la fecha y hora exactas en que se eliminó lógicamente el registro de la propiedad, si aplica.
 - `alias` (Texto): Un nombre opcional amigable o identificador interno asignado por el propietario o admin a la propiedad (ej. "Casa en la playa").
 
 
 ### Ciclo de Vida
 
-Una propiedad se crea inicialmente en estado 'vacía'. Puede cambiar a estado 'rentada' cuando se asocia a un contrato activo. Al finalizar o expirar un contrato, la propiedad puede volver a estado 'vacía' o mantener el estado 'rentada' si se asocia a un nuevo contrato inmediatamente. Las propiedades pueden ser soft-deleted del sistema.
+Una propiedad se crea inicialmente en estado 'vacía'. Puede cambiar a estado 'rentada' cuando se asocia a un contrato activo. Al finalizar o expirar un contrato, la propiedad puede volver a estado 'vacía' o mantener el estado 'rentada' si se asocia a un nuevo contrato inmediatamente. Las propiedades pueden ser eliminadas lógicamente del sistema.
 
 ### Actualización del Estado de la Propiedad
 
 *   El campo `status` de la propiedad (`rentada` o `vacía`) se actualizará automáticamente basado en la existencia y estado de los contratos asociados:
-    *   Cuando se crea un `Contrato` con `status: \'activo\'` para una propiedad, el sistema debe cambiar el `status` de la propiedad a `'rentada'`.
-    *   Cuando el último `Contrato` activo asociado a una propiedad cambia su estado a `'finalizado'` o `'cancelado'`, el sistema debe cambiar el `status` de la propiedad a `'vacía'`.
+    *   Cuando se crea un `Contrato` con `status: \\\'activo\\\'` para una propiedad, el sistema debe cambiar el `status` de la propiedad a `\'rentada\'`.
+    *   Cuando el último `Contrato` activo asociado a una propiedad cambia su estado a `\'finalizado\'` o `\'cancelado\'`, el sistema debe cambiar el `status` de la propiedad a `\'vacía\'`.
 
 ### Restricción de Eliminación Lógica
 
-*   El sistema **no debe permitir** marcar una propiedad con `deleted_at` (eliminación lógica) si esta propiedad tiene al menos un `Contrato` con `status: \'activo\'` asociado. Cualquier intento de eliminar una propiedad con contratos activos debe resultar en un error.
+*   El sistema **no debe permitir** marcar una propiedad con `deleted_at` (eliminación lógica) si esta propiedad tiene al menos un `Contrato` con `status: \\\'activo\\\'` asociado. Cualquier intento de eliminar una propiedad con contratos activos debe resultar en un error.
 
 ### 🔁 Casos de Uso Relacionados
 - [[📄 CasosDeUso/CU02_gestionar_propiedades]]

@@ -1,25 +1,24 @@
 ## Entidad: Contrato
 
-A formal one-year agreement between a Propietario and a single Inquilino for the rental of a Propiedad, defining terms such as rental amount, start date, and monthly payment schedule. This agreement triggers the generation of 12 monthly Payments and corresponding Invoices. **Note: In this V1.0, all contracts are for a fixed term of one year and are limited to a single tenant.**
-
+Un acuerdo formal de un año entre un Propietario y un único Inquilino para el alquiler de una Propiedad, definiendo términos como el monto del alquiler, fecha de inicio y calendario de pagos mensuales. Este acuerdo desencadena la generación de 12 Pagos mensuales y las Facturas correspondientes. **Nota: En esta V1.0, todos los contratos son a término fijo de un año y están limitados a un único inquilino.**
 ### Propiedades del Sistema
 
-- `contract_id` (Unique Identifier): A unique system-generated identifier for the contract.
-- `property_id` (Foreign Key): A foreign key linking to the property being rented.
-- `tenant_id` (Foreign Key): A foreign key linking to the single tenant on the contract.
+- `contract_id` (Identificador Único): Un identificador único generado por el sistema para el contrato.
+- `property_id` (Clave Foránea): Una clave foránea que enlaza a la propiedad que se está rentando.
+- `tenant_id` (Clave Foránea): Una clave foránea que enlaza al inquilino único en el contrato.
 - `start_date`: The commencement date of the one-year contract.
 - `end_date`: The end date of the contract (calculated as one year after the start date).
-- `rental_amount`: The monthly rental amount.
-- `payment_due_day`: The day of the month payment is due (e.g., 1st, 5th, 15th).
+- `rental_amount`: El monto del alquiler mensual.
+- `payment_due_day`: El día del mes en que vence el pago (ej. 1, 5, 15).
 - `status`: The current status of the contract (e.g., 'activo', 'finalizado', 'expired').
-- `previous_contract_id` (Foreign Key, Optional): A foreign key linking to the previous contract if this contract is a renewal.
-- `created_at`: Timestamp for when the contract was created.
-- `updated_at`: Timestamp for when the contract was last edited.
-- `finalized_at` (Timestamp, Optional): Timestamp for when the contract was finalized before its natural end date.
-- `deleted_at` (Timestamp, Optional): Timestamp for when the contract record was soft-deleted or canceled.
+- `previous_contract_id` (Clave Foránea, Opcional): Una clave foránea que enlaza al contrato anterior si este contrato es una renovación.
+- `created_at`: Marca de tiempo de cuándo se creó el contrato.
+- `updated_at`: Marca de tiempo de cuándo se editó por última vez el contrato.
+- `finalized_at` (Marca de Tiempo, Opcional): Marca de tiempo de cuándo se finalizó el contrato antes de su fecha de fin natural.
+- `deleted_at` (Marca de Tiempo, Opcional): Marca de tiempo de cuándo el registro del contrato fue eliminado lógicamente o cancelado.
 
 ### Ciclo de Vida
-- A contract is initially created with `status: 'activo'`.
+- Un contrato se crea inicialmente con `status: 'activo'`.
 - Upon reaching its `end_date`, the status automatically changes to `status: 'finalizado'` starting the day after the `end_date`.
 - An admin can manually set the status to `status: 'cancelado'` before the `end_date` by populating the `deleted_at` field.
 - If a contract is soft-deleted (`deleted_at` is set, status changes to `cancelado`), its associated future Payments should be marked as cancelled, and no future Invoices should be generated for these cancelled Payments.
