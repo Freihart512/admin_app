@@ -46,3 +46,36 @@ Las propiedades que representan a un administrador dentro del sistema son:
 - `created_at` (Fecha y hora de creación de la cuenta)
 - `last_login_at` (Opcional: Fecha y hora del último inicio de sesión)
 - `deleted_at` (Opcional: Marca de tiempo para borrado lógico)
+
+### 🧑‍💻 User Stories Relacionadas
+- [[🧑‍💻 UserStories/US06_listar_propiedades_admin]]
+- [[🧑‍💻 UserStories/US10_CU04_gestionar_contadores]]
+- [[🧑‍💻 UserStories/US13_cancelar_contrato.md|US13: Cancelar contrato]]
+- [[🧑‍💻 UserStories/US21_CU09_integrar_con_sw_sapien]]
+- [[🧑‍💻 UserStories/US23_CU10_verificar_errores_y_logs_del_sistema]]
+- [[🧑‍💻 UserStories/US24_CU10_verificar_errores_y_logs_del_sistema]]
+- [[🧑‍💻 UserStories/US25_CU11_gestionar_accesos_y_credenciales]]
+- [[🧑‍💻 UserStories/US26_CU11_gestionar_accesos_y_credenciales]]
+- [[🧑‍💻 UserStories/US01_registrar_nuevo_propietario]]
+- [[🧑‍💻 UserStories/US04_registrar_nueva_propiedad]]
+- [[🧑‍💻 UserStories/US07_CU03_gestionar_inquilinos]]
+- [[🧑‍💻 UserStories/US11_registrar_nuevo_contrato]]
+- [[🧑‍💻 UserStories/US19_listar_facturas]]
+- [[🧑‍💻 UserStories/US20_listar_facturas_admin]]
+
+### 👥 Roles Relacionados
+- [[👥 Usuarios/propietario]]
+- [[👥 Usuarios/inquilino]]
+- [[👥 Usuarios/contador]]
+
+### 🏠 Entidades Relacionadas
+- [[🏠 Entidades/propiedad]]
+- [[🏠 Entidades/contrato]]
+- [[🏠 Entidades/pago]]
+- [[🏠 Entidades/factura]]
+- [[🏠 Entidades/usuario]]
+- [[🏠 Entidades/log]]
+- [[🏠 Entidades/notificacion]]
+
+---
+

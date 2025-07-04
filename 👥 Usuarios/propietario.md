@@ -13,16 +13,37 @@ Persona que posee una o más propiedades en renta.
 - [[📄 CasosDeUso/CU11_usuarios_y_accesos]]
 
 ---
+### Proceso de Alta en el Sistema
+### 🔒 Permisos Detallados y Niveles de Acceso
 
-### 📝 Detalles del Rol
+Los propietarios tienen acceso principalmente de solo lectura a la información relacionada con sus propiedades y contratos. Su acceso está **restringido a aquellas entidades (Propiedad, Contrato, Pago, Factura) con las que tienen una relación directa como dueños**. Los permisos incluyen:
+- Ver la lista de sus [[🏠 Entidades/propiedad|propiedades]] y su estado.
+- Acceder a resúmenes o paneles de sus [[🏠 Entidades/propiedad|propiedades]], [[🏠 Entidades/contrato|contratos]] y [[🏠 Entidades/contrato|contratos]] activos.
+- Ver y descargar las [[🏠 Entidades/factura|facturas]] generadas para sus propiedades.
+- Ver resúmenes de ingresos mensuales por [[🏠 Entidades/propiedad|propiedad]].
+- Ver el historial de [[🏠 Entidades/factura|facturación]] por [[🏠 Entidades/contrato|contrato]].
+- Gestionar sus propias credenciales de cuenta (cambiar contraseña, etc.).
+- Capacidad de asociar, modificar y eliminar la asociación de un **único [[👥 Usuarios/contador|contador]] activo** a su cuenta. Este [[👥 Usuarios/contador|contador]] asociado tendrá acceso a todas las [[🏠 Entidades/factura|facturas]] del propietario para fines fiscales.
+- **Al ser registrado por un [[👥 Usuarios/admin|administrador]] ([[🧑‍💻 UserStories/US01_registrar_nuevo_propietario|US01]]), el propietario recibe una notificación de bienvenida ([[🧑‍💻 UserStories/US27_enviar_notificacion_bienvenida_propietario|US27]]) que incluye la contraseña provisional para acceder al sistema.**
 
-**Detailed Permissions and Access Levels:** View-only access to property-related info. Includes: viewing property list/status, accessing property/contract/active contract dashboard overview, viewing/downloading property invoices, viewing monthly income summaries per property, viewing invoicing history per contract, managing own account credentials. Ability to create, modify, and delete the association of a *single active* Accountant to their account. This associated Accountant will have access to all of the owner's property invoices. No access to other owners' info, properties not owned, admin features, or ability to create/modify/delete properties.
+No tienen acceso a información de otros propietarios, propiedades que no les pertenecen, funcionalidades de administrador, ni la capacidad de crear, modificar o eliminar propiedades.
 
-**Key Responsibilities:** Track property financial performance via reports/invoices, manage their single active accountant association, maintain account security.
+#### Funcionalidad: Asociar Contador
+El propietario tiene la capacidad de asociar un único [[👥 Usuarios/contador|contador]] a su perfil. Esta funcionalidad permite que el [[👥 Usuarios/contador|contador]] designado reciba notificaciones y tenga acceso a las [[🏠 Entidades/factura|facturas]] fiscales del propietario. (Ver [[🧑‍💻 UserStories/US09_CU04_gestionar_contadores|US09]])
 
-**Interactions with Other Roles:** Actively interacts with System (viewing data/reports, managing their single active accountant). Indirectly with Tenants (contracts/invoices). Directly with their single active Accountant (by managing their association). Admin manages user account and initial property associations.
+### 📋 Responsabilidades Clave
 
-**Specific Needs and Goals:** Clear financial reports/historical data, control over which single accountant can access all of their financial information, account security. Goal: understand portfolio financial performance, manage their single accounting access.
+- Seguir el rendimiento financiero de sus [[🏠 Entidades/propiedad|propiedades]] a través de informes y [[🏠 Entidades/factura|facturas]].
+- Gestionar la asociación de su único [[👥 Usuarios/contador|contador]] activo.
+- Mantener la seguridad de su cuenta.
+
+### 🤝 Interacciones con Otros Roles
+
+Los propietarios interactúan activamente con el Sistema (viendo datos/informes, gestionando la asociación de su [[👥 Usuarios/contador|contador]]). Indirectamente interactúan con los Inquilinos a través de los [[🏠 Entidades/contrato|contratos]] y [[🏠 Entidades/factura|facturas]]. Directamente interactúan con su único [[👥 Usuarios/contador|contador]] asociado gestionando dicha asociación. El [[👥 Usuarios/admin|administrador]] gestiona la cuenta de usuario del propietario y las asociaciones iniciales de [[🏠 Entidades/propiedad|propiedades]].
+
+### 🎯 Necesidades y Objetivos Específicos
+
+Necesitan informes financieros claros y datos históricos para entender el rendimiento de su cartera de [[🏠 Entidades/propiedad|propiedades]]. Desean tener control sobre qué único [[👥 Usuarios/contador|contador]] puede acceder a toda su información financiera ([[🏠 Entidades/factura|facturas]]). La seguridad de la cuenta es importante. Su objetivo es comprender el rendimiento financiero de su portafolio y gestionar el acceso a su [[👥 Usuarios/contador|contador]] fiscal.
 
 ---
 
@@ -42,6 +63,16 @@ These are the key properties representing an Owner within the system:
 - `deleted_at` (Timestamp): For soft deletion.
 - `password_hash`: Hashed password for login.
 
+---
+
+### 🏠 Entidades Relacionadas
+- [[🏠 Entidades/propiedad]]
+- [[🏠 Entidades/contrato]]
+- [[🏠 Entidades/factura]]
+- [[🏠 Entidades/pago]]
+- [[🏠 Entidades/notificacion]]
+- [[🏠 Entidades/log]]
+- [[🏠 Entidades/usuario]]
 ---
 
 ### 📎 Enlaces relacionados

@@ -21,21 +21,21 @@
 A `Pago` record is typically created automatically when a `Contrato` is activated or on a monthly basis as per the contract terms. Its status starts as 'due'. Once the corresponding `Factura` is generated, the `invoice_id` is populated. The status changes to 'paid' when the payment is registered (though payment processing is out of scope for V1.0). The status can also become 'overdue' if the `due_date` passes without payment being recorded, or 'cancelled' if the associated contract is finalized prematurely or the payment is no longer required.
 
 ### 🔁 Casos de Uso Relacionados
- - [[📄 CasosDeUso/CU06_facturacion_automatica]]
-- [[📄 CasosDeUso/CU08_resumen_historial]]
+ - [[📄 CasosDeUso/CU06_facturacion_automatica.md]]
+- [[📄 CasosDeUso/CU08_resumen_historial.md]]
 
 ### 🧑‍💻 User Stories Relacionadas
- - [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
-- [[🧑‍💻 UserStories/US19_listar_facturas]]
-- [[🧑‍💻 UserStories/US18_reporte_financiero]]
+ - [[🧑‍💻 UserStories/US14_generar_factura_automaticamente.md]]
+- [[🧑‍💻 UserStories/US19_listar_facturas_propietario.md]]
+- [[🧑‍💻 UserStories/US18_reporte_financiero.md]]
 
 ### 👥 Roles Relacionados
- - [[👥 Usuarios/propietario]]
-- [[👥 Usuarios/inquilino]]
-- [[👥 Usuarios/admin]]
-- [[👥 Usuarios/contador]]
+ - [[👥 Usuarios/propietario.md]]
+- [[👥 Usuarios/inquilino.md]]
+- [[👥 Usuarios/admin.md]]
+- [[👥 Usuarios/contador.md]]
 
 ### 🏠 Entidades Relacionadas
-- [[🏠 Entidades/contrato]]
 - [[🏠 Entidades/factura]]
+- [[🏠 Entidades/contrato]]
 - [[🏠 Entidades/propiedad]]

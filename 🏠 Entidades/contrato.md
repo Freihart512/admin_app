@@ -16,13 +16,13 @@ A formal one-year agreement between a Propietario and a single Inquilino for the
 - `created_at`: Timestamp for when the contract was created.
 - `updated_at`: Timestamp for when the contract was last edited.
 - `finalized_at` (Timestamp, Optional): Timestamp for when the contract was finalized before its natural end date.
-- `deleted_at` (Timestamp, Optional): Timestamp for when the contract record was soft-deleted.
+- `deleted_at` (Timestamp, Optional): Timestamp for when the contract record was soft-deleted or canceled.
 
 ### Ciclo de Vida
 - A contract is initially created with `status: 'activo'`.
-- Upon reaching its `end_date`, the status automatically changes to `status: 'expired'`.
-- An admin can manually set the status to `status: 'eliminado'` before the `end_date`.
-- If a contract is soft-deleted (`deleted_at` is set), it should be filtered out of active listings by default, and any future associated Payments and Invoices that have not been generated yet should be cancelled or marked as invalid.
+- Upon reaching its `end_date`, the status automatically changes to `status: 'finalizado'` starting the day after the `end_date`.
+- An admin can manually set the status to `status: 'cancelado'` before the `end_date` by populating the `deleted_at` field.
+- If a contract is soft-deleted (`deleted_at` is set, status changes to `cancelado`), its associated future Payments should be marked as cancelled, and no future Invoices should be generated for these cancelled Payments.
 
 ## Historial de Cambios
 
@@ -35,8 +35,7 @@ Además del estado "activo" y "finalizado", se añade el estado "próximo a venc
 *   **activo:** El contrato está actualmente en vigor.
 *   **finalizado:** El contrato ha llegado a su fecha de fin.
 *   **próximo a vencer:** Este estado se activará automáticamente dos meses antes de la fecha de finalización del contrato.
-**eliminado (lógico):** El contrato ha sido marcado como eliminado al popularse el campo `deleted_at`. Los contratos en este estado no deben considerarse activos.
-
+*   **cancelado:** El contrato ha sido cancelado manualmente por un administrador o soft-deleted al popularse el campo `deleted_at`. Los contratos en este estado no deben considerarse activos y sus futuros pagos asociados deben ser marcados como cancelados.
 
 ### 🔁 Casos de Uso Relacionados
 - [[📄 CasosDeUso/CU01_gestionar_propietarios]]
@@ -46,18 +45,16 @@ Además del estado "activo" y "finalizado", se añade el estado "próximo a venc
 
 ### 🧑‍💻 User Stories Relacionadas
 - [[🧑‍💻 UserStories/US03_panel_propietario]]
-- [[🧑‍💻 UserStories/US10_CU05_gestionar_contratos]]
+- [[🧑‍💻 UserStories/US10_editar_contador]]
 - [[🧑‍💻 UserStories/US011_registrar_nuevo_contrato]]
 - [[🧑‍💻 UserStories/US12_editar_contrato]]
 - [[🧑‍💻 UserStories/US13_finalizar_contrato]]
-- [[🧑‍💻 UserStories/US14_generar_factura_automaticamente]]
-- [[🧑‍💻 UserStories/US19_listar_facturas]]
-
+- [[🧑‍💻 UserStories/US13_cancelar_contrato.md|US13: Cancelar contrato]]
 ### 👥 Roles Relacionados
 - [[👥 Usuarios/admin]]
 - [[👥 Usuarios/propietario]]
 - [[👥 Usuarios/inquilino]]
 ### 🏠 Entidades Relacionadas
-- [[🏠 Entidades/propiedad]]
+- [[🏠 Entidades/propiedad]] 
 - [[🏠 Entidades/pago]]
 - [[🏠 Entidades/factura]]

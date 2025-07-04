@@ -14,14 +14,27 @@ Represents a record of significant system events, processes, or errors, particul
 - `related_entity_id` (Optional): The ID of the entity related to the log.
 
 ### 🔁 Casos de Uso Relacionados
-- [[📄 CasosDeUso/CU10_logs_y_errores]]
-- [[📄 CasosDeUso/CU06_facturacion_automatica]]
-- [[📄 CasosDeUso/CU09_integracion_swsapien]]
+- [[📄 CasosDeUso/CU10_logs_y_errores.md]]
+- [[📄 CasosDeUso/CU06_facturacion_automatica.md]]
+- [[📄 CasosDeUso/CU09_integracion_swsapien.md]]
 
 ### 🧑‍💻 User Stories Relacionadas
-- [[🧑‍💻 UserStories/US22_CU09_integrar_con_sw_sapien]]
-- [[🧑‍💻 UserStories/US23_CU10_verificar_errores_y_logs_del_sistema]]
-- [[🧑‍💻 UserStories/US24_CU10_verificar_errores_y_logs_del_sistema]]
+- [[🧑‍💻 UserStories/US22_seguimiento_integracion_con_sw_sapien.md]]
+- [[🧑‍💻 UserStories/US23_logs_procesos_automaticos.md]]
+- [[🧑‍💻 UserStories/US24_US24_alerta_de_fallo_factura.md]]
 
 ### 👥 Roles Relacionados
-- [[👥 Usuarios/admin]]
+- [[👥 Usuarios/admin.md]]
+
+### 🏠 Entidades Relacionadas
+
+La entidad `Log` puede estar relacionada con otras entidades a través de los campos `related_entity_type` y `related_entity_id` para proporcionar contexto adicional a los eventos registrados. Algunas de las entidades con las que un log podría estar relacionado incluyen:
+
+- [[🏠 Entidades/factura.md]]
+- [[🏠 Entidades/contrato.md]]
+- [[🏠 Entidades/pago.md]]
+- [[🏠 Entidades/usuario.md]]
+- [[🏠 Entidades/propiedad.md]]
+- [[🏠 Entidades/inquilino.md]]
+- [[🏠 Entidades/propietario.md]]
+- [[🏠 Entidades/contador.md]]

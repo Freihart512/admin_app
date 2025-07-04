@@ -18,19 +18,20 @@ Representa un registro de una notificación enviada por el sistema a un usuario 
 - `created_at`: Timestamp para cuando se creó el registro de notificación.
 
 ### 🔁 Casos de Uso Relacionados
-- [[📄 CasosDeUso/CU07_notificaciones_email]]
-- [[📄 CasosDeUso/CU06_facturacion_automatica]]
+- [[📄 CasosDeUso/CU07_notificaciones_email.md]]
+- [[📄 CasosDeUso/CU06_facturacion_automatica.md]]
 
 ### 🧑‍💻 User Stories Relacionadas
-- [[🧑‍💻 UserStories/US16_CU07_enviar_notificaciones_por_email]]
-- [[🧑‍💻 UserStories/US17_CU07_enviar_notificaciones_por_email]]
-- [[🧑‍💻 UserStories/US23_CU10_verificar_errores_y_logs_del_sistema]]
+- [[🧑‍💻 UserStories/US16_notificacion_email.md]]
+- [[🧑‍💻 UserStories/US16_notificacion_email.md]]
+- [[🧑‍💻 UserStories/US27_enviar_notificacion_bienvenida_propietario]]
+- [[🧑‍💻 UserStories/US23_logs_procesos_automaticos.md]]
 
 ### 👥 Roles Relacionados
-- [[👥 Usuarios/admin]]
-- [[👥 Usuarios/propietario]]
-- [[👥 Usuarios/inquilino]]
-- [[👥 Usuarios/contador]]
+- [[👥 Usuarios/admin.md]]
+- [[👥 Usuarios/propietario.md]]
+- [[👥 Usuarios/inquilino.md]]
+- [[👥 Usuarios/contador.md]]
 
 ### 🏠 Entidades Relacionadas
 - [[🏠 Entidades/factura]]
