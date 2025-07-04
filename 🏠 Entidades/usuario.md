@@ -34,7 +34,8 @@ Al crearse un usuario con rol 'Propietario', se desencadena el envío de una not
 ### Validaciones Clave
 
 - `username` debe ser único.
-- `email` debe tener un formato válido y ser único (opcionalmente).\n- `role` debe ser uno de los roles predefinidos.
+- `email` debe tener un formato válido y ser único (opcionalmente).
+- `role` debe ser uno de los roles predefinidos.
 - `associated_entity_id` debe hacer referencia a una entidad existente del tipo correcto según el `role`.
 
 ---
@@ -55,14 +56,8 @@ Las relaciones de la entidad `Usuario` con otras entidades dependen del `role` a
     - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus propiedades y contratos (ej. [[🏠 Entidades/factura|factura]] generada, [[🏠 Entidades/pago|pago]] vencido).
     - Puede ver [[🏠 Entidades/factura]] y [[🏠 Entidades/pago]] relacionados con sus propiedades/contratos.
 
-- **Inquilino:**
-    - Está asociado a uno o más [[🏠 Entidades/contrato|contrato]] (relación uno a muchos, aunque V1.0 limita a un inquilino por contrato).
-    - Es el sujeto principal de los [[🏠 Entidades/pago|pago]] definidos en sus contratos.
-    - Es el destinatario de las [[🏠 Entidades/factura|factura]] generadas a partir de sus pagos.
-    - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con sus contratos, pagos y facturas.
-
 - **Contador:**
-    - Puede estar asociado a uno o más [[👥 Usuarios/propietario]] para recibir notificaciones fiscales (relación uno a muchos, aunque en V1.0 se implementará como uno a uno: un propietario puede tener un contador).
+    - Puede estar asociado a **uno o más** [[👥 Usuarios/propietario]] para recibir notificaciones fiscales (relación **uno a muchos**, aunque en V1.0 se implementará como **uno a uno**: un propietario puede tener un contador).
     - Recibe [[🏠 Entidades/notificacion|notificación]] relacionadas con las [[🏠 Entidades/factura|factura]] de los propietarios a los que está asociado.
 
 ### 🔁 Casos de Uso Relacionados

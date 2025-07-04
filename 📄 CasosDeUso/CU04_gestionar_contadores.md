@@ -8,3 +8,7 @@
 ### 📎 Enlaces relacionados
 - [[🧑‍💻 UserStories/todas_las_userstories]]
 - [[👥 Usuarios/perfiles]]
+
+### 🏠 Entidades Relacionadas
+- [[🏠 Entidades/usuario.md|Entidad Usuario]]
+- [[🏠 Entidades/factura.md|Entidad Factura]]
