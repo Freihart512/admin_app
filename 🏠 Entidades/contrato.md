@@ -23,6 +23,8 @@ A formal one-year agreement between a Propietario and a single Inquilino for the
 - Upon reaching its `end_date`, the status automatically changes to `status: 'finalizado'` starting the day after the `end_date`.
 - An admin can manually set the status to `status: 'cancelado'` before the `end_date` by populating the `deleted_at` field.
 - If a contract is soft-deleted (`deleted_at` is set, status changes to `cancelado`), its associated future Payments should be marked as cancelled, and no future Invoices should be generated for these cancelled Payments.
+- A contract can also be marked as `status: 'cancelado'` (soft-deleted by populating `deleted_at`) automatically by the system if the associated Propietario or Inquilino is logically deleted. This cascaded cancellation follows the same rules regarding associated future Payments and Invoices.
+
 
 ## Historial de Cambios
 

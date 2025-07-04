@@ -23,7 +23,7 @@ Al crearse un usuario con rol 'Propietario', se desencadena el envío de una not
 ### Impacto de la Eliminación Lógica por Rol
 
 - **Propietario:** Si un `Usuario` con `role: 'Propietario'` es marcado con `deleted_at`, todos los `Contratos` asociados a las propiedades de ese propietario que tengan `status: 'activo'` deben cambiar su estado a `'cancelado'`. Esto implica la cancelación de los futuros `Pago` asociados a esos contratos y, por ende, la detención de la generación de futuras `Factura` para esos pagos. **Además, todas las `Propiedad` asociadas a este propietario deben ser marcadas como eliminadas lógicamente (`deleted_at` poblado).**
-- **Inquilino:** (Especificar impacto en contratos, pagos, facturas activas si un inquilino es eliminado lógicamente. Probablemente similar a propietario para sus contratos.)
+- **Inquilino:** Si un `Usuario` con `role: 'Inquilino'` es marcado con `deleted_at`, todos los `Contratos` asociados a este inquilino que tengan `status: 'activo'` deben cambiar su estado a `'cancelado'`. Esto implica la cancelación de los futuros `Pago` asociados a esos contratos y, por ende, la detención de la generación de futuras `Factura` para esos pagos. El usuario (inquilino) debe seguir siendo listado para consulta.
 - **Contador:** (Especificar impacto en la asociación con propietarios y recepción de notificaciones si un contador es eliminado lógicamente.)
 - **Admin:** (Especificar impacto si un admin es eliminado lógicamente. Probablemente solo desactiva la cuenta.)
 
@@ -46,8 +46,7 @@ Las relaciones de la entidad `Usuario` con otras entidades dependen del `role` a
 
 - **Admin:**
     - Puede gestionar la mayoría de las [[🏠 Entidades/entidades]].
-    - Puede ser el [[🏠 Entidades/usuario]] registrado en un [[🏠 Entidades/log]] por acciones de administración.
-    - Recibe [[🏠 Entidades/notificacion]] de alerta del sistema (ej. fallo de timbrado de [[🏠 Entidades/factura]] ).
+    - Puede ser el [[🏠 Entidades/usuario]] registrado en un [[🏠 Entidades/log]] por acciones de administración.\n    - Recibe [[🏠 Entidades/notificacion]] de alerta del sistema (ej. fallo de timbrado de [[🏠 Entidades/factura]] ).
 
 - **Propietario:**
     - Tiene una o más [[🏠 Entidades/propiedad|propiedad]] (relación uno a muchos).

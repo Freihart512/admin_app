@@ -20,6 +20,7 @@
 
 A `Pago` record is typically created automatically when a `Contrato` is activated or on a monthly basis as per the contract terms. Its status starts as 'due'. Once the corresponding `Factura` is generated, the `invoice_id` is populated. The status changes to 'paid' when the payment is registered (though payment processing is out of scope for V1.0). The status can also become 'overdue' if the `due_date` passes without payment being recorded, or 'cancelled' if the associated contract is finalized prematurely or the payment is no longer required.
 
+This includes cancellation as a result of the associated Contract being cancelled due to the logical deletion of the linked Propietario or Inquilino.
 ### 🔁 Casos de Uso Relacionados
  - [[📄 CasosDeUso/CU06_facturacion_automatica.md]]
 - [[📄 CasosDeUso/CU08_resumen_historial.md]]
