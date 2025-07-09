@@ -7,7 +7,7 @@ Representa un registro de una notificación enviada por el sistema a un usuario 
 - `notification_id` (Unique Identifier): Un identificador único generado por el sistema para la notificación.
 - `recipient_type` (Enum: 'inquilino', 'propietario', 'contador'): El tipo de usuario que recibe la notificación.
 - `recipient_id` (Foreign Key): Un enlace al identificador único del usuario que recibe la notificación (puede ser un `tenant_id`, `owner_id` o el ID del contador si se gestionan como usuarios).
-- `notification_type` (String): El tipo de notificación (ej. 'factura_generada', 'pago_vencido_proximo').
+- `notification_type` (String): El tipo de notificación (ej. 'factura_generada', 'pago_vencido_proximo', **'error_facturacion'**).
 - `subject` (String): El asunto del correo electrónico de notificación.
 - `body` (Text): El contenido del correo electrónico de notificación.
 - `related_entity_type` (Optional String): El tipo de entidad relacionada con la notificación (ej. 'Factura', 'Contrato').

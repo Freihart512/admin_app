@@ -9,7 +9,7 @@ Representa una obligación específica de pago de alquiler mensual generada por 
 - `due_date` (Fecha): La fecha en que vence el pago.
 - `amount` (Decimal): El monto del pago (debe coincidir con el monto del alquiler del contrato).
 - `payment_period`: Indica el mes/año o período que cubre el pago (ej. "Enero 2024").
-- `status`: El estado actual del pago (ej. 'due', 'paid', 'overdue', 'cancelled').
+- `status`: El estado actual del pago (ej. 'due', 'paid', 'overdue', 'cancelled', 'invoiced').
 - `invoice_id` (Clave Foránea, Opcional): Una clave foránea que enlaza a la factura generada para este pago.
 - `payment_date` (Marca de Tiempo, Opcional): La fecha y hora en que el pago fue realmente recibido y registrado en el sistema.
 - `created_at` (Marca de Tiempo): La fecha y hora en que el registro del pago fue generado por el sistema (típicamente al crear el contrato o mensualmente).
@@ -19,7 +19,7 @@ Representa una obligación específica de pago de alquiler mensual generada por 
 ### Ciclo de Vida
 
 Un registro de `Pago` se crea típicamente de forma automática cuando se activa un `Contrato` o de manera mensual según los términos del contrato. Su estado comienza como 'due'. Una vez que se genera la `Factura` correspondiente, se puebla el `invoice_id`. El estado cambia a 'paid' cuando se registra el pago (aunque el procesamiento de pagos está fuera del alcance de la V1.0). El estado también puede pasar a ser 'overdue' si la `due_date` pasa sin que se registre el pago, o 'cancelled' si el contrato asociado se finaliza prematuramente o el pago ya no es requerido.
-
+Una vez que la `Factura` asociada a un `Pago` se genera exitosamente (como parte del proceso de facturación automática en CU06), el estado de dicho `Pago` se actualiza a 'invoiced'.
 Esto incluye la cancelación como resultado de que el Contrato asociado sea cancelado debido a la eliminación lógica del Propietario o Inquilino vinculado.
 
 ### 🔁 Casos de Uso Relacionados

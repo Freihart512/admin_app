@@ -1,6 +1,7 @@
 ## Entidad: Contrato
 
 Un acuerdo formal de un año entre un Propietario y un único Inquilino para el alquiler de una Propiedad, definiendo términos como el monto del alquiler, fecha de inicio y calendario de pagos mensuales. Este acuerdo desencadena la generación de 12 Pagos mensuales y las Facturas correspondientes. **Nota: En esta V1.0, todos los contratos son a término fijo de un año y están limitados a un único inquilino.**
+**Aclaración:** Un mismo inquilino puede estar asociado a múltiples contratos a lo largo del tiempo (históricos y activos, aunque no para la misma propiedad simultáneamente debido a las validaciones en la creación).
 ### Propiedades del Sistema
 
 - `contract_id` (Identificador Único): Un identificador único generado por el sistema para el contrato.
