@@ -23,3 +23,4 @@ Como **Admin**, quiero registrar un nuevo **Propietario** con sus datos básicos
  - **CA08:** Tras el registro exitoso, el sistema **envía una notificación de bienvenida** al correo electrónico del nuevo propietario.
  - **CA09:** La notificación de bienvenida **incluye la contraseña provisional** generada.
  - **CA10:** El envío exitoso de la notificación **valida la existencia y accesibilidad del correo electrónico**.
+ - **CA11:** Tras el registro exitoso de un nuevo propietario por parte de un administrador, el sistema debe generar un registro en la [[🏠 Entidades/log.md|Log]], detallando la acción y el usuario afectado, según lo especificado en el caso de uso [[📄 CasosDeUso/CU10_logs_y_errores.md|CU10]].

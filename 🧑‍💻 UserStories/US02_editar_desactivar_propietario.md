@@ -32,6 +32,10 @@ Modificar la información de un propietario existente o cambiar su estado a inac
 - **Restricción de Desactivación:**
  - CA10: El sistema previene la desactivación de un propietario si existen [[🏠 Entidades/contrato|Contrato]]s activos asociados que, por alguna razón, no pueden ser cancelados automáticamente como parte de la cascada definida. Se debe notificar al Admin de esta restricción.
 
+- CA11: Tras la edición exitosa de un propietario por parte de un administrador, el sistema debe generar un registro en el Log, detallando la acción, el usuario afectado y los campos modificados con sus valores anteriores y nuevos, según lo especificado en el caso de uso CU10.
+- CA12: Tras la desactivación lógica exitosa de un propietario por parte de un administrador, el sistema debe generar un registro en el Log, detallando la acción y el usuario afectado, según lo especificado en el caso de uso CU10.
+
+
 **Detalles Backend:**
 ### 📝 Notas Adicionales
 
