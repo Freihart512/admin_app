@@ -53,7 +53,7 @@ Un registro en la Entidad Propietario (identificado por `user_id`):
 - [[📄 CasosDeUso/CU06_facturacion_automatica.md]] (consume datos de propietario)
 - [[📄 CasosDeUso/CU07_notificaciones_email.md]] (propietario recibe notificaciones)
 - [[📄 CasosDeUso/CU10_logs_y_errores.md]] (acciones sobre propietario se loguean)
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
 
 ---
 

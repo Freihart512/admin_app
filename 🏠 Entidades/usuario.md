@@ -85,7 +85,7 @@ Las relaciones de la entidad `Usuario` con otras entidades dependen de los `role
 - [[📄 CasosDeUso/CU01_gestionar_propietarios.md]] (gestiona usuarios con rol propietario)
 - [[📄 CasosDeUso/CU03_gestionar_inquilinos.md]] (gestiona usuarios con rol inquilino)
 - [[📄 CasosDeUso/CU04_gestionar_contadores.md]] (gestiona usuarios con rol contador)
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]] (gestión general de usuarios, roles y credenciales - ¡Auto-referencia!)
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]] (gestión general de usuarios, roles y credenciales - ¡Auto-referencia!)
 - [[📄 CasosDeUso/CU07_notificaciones_email.md]] (usuario recibe notificaciones)
 - [[📄 CasosDeUso/CU10_logs_y_errores.md]] (acciones de usuario se loguean)
 

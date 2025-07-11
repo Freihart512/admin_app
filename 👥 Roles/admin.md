@@ -30,7 +30,7 @@ El principal objetivo del administrador es mantener el sistema funcionando de ma
 - [[📄 CasosDeUso/CU05_gestionar_contratos]]
 - [[📄 CasosDeUso/CU09_integracion_swsapien]]
 - [[📄 CasosDeUso/CU10_logs_y_errores]]
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos]]
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos]]
 
 ---
 
@@ -48,20 +48,7 @@ Las propiedades que representan a un administrador dentro del sistema son:
 - `deleted_at` (Opcional: Marca de tiempo para borrado lógico)
 
 ### 🧑‍💻 User Stories Relacionadas
-- [[🧑‍💻 UserStories/US06_listar_propiedades_admin]]
-- [[🧑‍💻 UserStories/US10_CU04_gestionar_contadores]]
-- [[🧑‍💻 UserStories/US13_cancelar_contrato.md|US13: Cancelar contrato]]
-- [[🧑‍💻 UserStories/US21_CU09_integrar_con_sw_sapien]]
-- [[🧑‍💻 UserStories/US23_CU10_verificar_errores_y_logs_del_sistema]]
-- [[🧑‍💻 UserStories/US24_CU10_verificar_errores_y_logs_del_sistema]]
-- [[🧑‍💻 UserStories/US25_CU11_gestionar_accesos_y_credenciales]]
-- [[🧑‍💻 UserStories/US26_CU11_gestionar_accesos_y_credenciales]]
-- [[🧑‍💻 UserStories/US01_registrar_nuevo_propietario]]
-- [[🧑‍💻 UserStories/US04_registrar_nueva_propiedad]]
-- [[🧑‍💻 UserStories/US07_CU03_gestionar_inquilinos]]
-- [[🧑‍💻 UserStories/US11_registrar_nuevo_contrato]]
-- [[🧑‍💻 UserStories/US19_listar_facturas]]
-- [[🧑‍💻 UserStories/US20_listar_facturas_admin]]
+
 
 ### 👥 Roles Relacionados
 - [[👥 Usuarios/propietario]]

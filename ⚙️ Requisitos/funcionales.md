@@ -21,7 +21,7 @@ Basado en los Casos de Uso (CU) y User Stories (US) detallados en otros document
 -   Gestionar contratos (crear, editar, finalizar con impacto en la facturación).
 -   [[📄 CasosDeUso/CU05_gestionar_contratos]]
 -   Gestionar accesos y credenciales para usuarios propietarios.
--   [[📄 CasosDeUso/CU11_usuarios_y_accesos]]
+-   [[📄 CasosDeUso/CU01_usuarios_y_accesos]]
 
 ### Facturación y Notificaciones
 

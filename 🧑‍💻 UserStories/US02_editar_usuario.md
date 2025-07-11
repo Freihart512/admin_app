@@ -1,8 +1,8 @@
-# US48
+# US02
 
-## Editar Perfil de Usuario (General)
+## Editar Usuario
 
-**Caso de Uso:** [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]]
+**Caso de Uso:** [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]]
 
 Como usuario registrado, quiero poder actualizar la información básica de mi perfil (como nombre, teléfono), y poder solicitar la actualización de mi email, que requerirá un proceso de validación adicional para mantener la seguridad de mi cuenta. Un administrador también podrá realizar estas ediciones en nombre de cualquier usuario.
 
@@ -51,7 +51,7 @@ El usuario podrá enviar una solicitud al backend para actualizar campos de su p
 
 ## Relaciones
 
-- **Caso de Uso Principal:** [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]]
+- **Caso de Uso Principal:** [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]]
 - **Entidades:**
     - [[🏠 Entidades/Usuario.md]] (La entidad cuyo perfil se edita)
     - [[🏠 Entidades/Notificacion.md]] (Para el envío de emails de verificación y confirmación)

@@ -21,7 +21,7 @@ Bienvenido al vault de documentación de la Plataforma de Administración de Pro
 - [[📄 CasosDeUso/CU08_resumen_historial]]
 - [[📄 CasosDeUso/CU09_integracion_swsapien]]
 - [[📄 CasosDeUso/CU10_logs_y_errores]]
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos]]
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos]]
 
 ## 🧑‍💻 Historias de Usuario
 - [[🧑‍💻 UserStories/todas_las_userstories]]

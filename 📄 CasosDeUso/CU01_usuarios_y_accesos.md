@@ -1,4 +1,4 @@
-### 🔸 CU11 - Gestión General de Usuarios y Accesos
+### 🔸 CU01 - Gestión General de Usuarios y Accesos
 
 Este caso de uso centraliza la gestión de la [[🏠 Entidades/usuario.md|Entidad Usuario]], que es la base para la autenticación, el acceso y los roles en el sistema. Abarca las funcionalidades necesarias para:
 
@@ -20,13 +20,13 @@ La gestión de usuarios implica el manejo de credenciales de acceso (email como 
 
 **User Stories Asociadas:**
 
-- [[🧑‍💻 UserStories/US25_registro_nuevo_usuario.md|US25: Registro de Nuevo Usuario]]
-- [[🧑‍💻 UserStories/US46_inicio_de_sesion.md|US46: Inicio de Sesión (Login)]]
-- [[🧑‍💻 UserStories/US26_cambio_contraseña.md|US26: Cambio de Contraseña]]
-- [[🧑‍💻 UserStories/US47_recuperacion_contrasena.md|US47: Recuperación de Contraseña]]
-- [[🧑‍💻 UserStories/US45_asignar_modificar_roles_usuario.md|US45: Asignar/Modificar Roles de Usuario (Administrador)]]
-- [[🧑‍💻 UserStories/US48_editar_perfil_usuario_general.md|US48: Editar Perfil de Usuario (General)]]
-- [[🧑‍💻 UserStories/US49_desactivar_activar_usuario_general.md|US49: Desactivar/Activar Usuario (General - por Administrador)]]
+- [[🧑‍💻 UserStories/US01_registro_nuevo_usuario.md|US01: Registro de Nuevo Usuario]]
+- [[🧑‍💻 UserStories/US04_inicio_de_sesion.md|US04: Inicio de Sesión (Login)]]
+- [[🧑‍💻 UserStories/US05_cambio_contraseña.md|US05: Cambio de Contraseña]]
+- [[🧑‍💻 UserStories/US06_recuperacion_contrasena.md|US06: Recuperación de Contraseña]]
+- [[🧑‍💻 UserStories/US07_asignar_modificar_roles_usuario.md|US07: Asignar/Modificar Roles de Usuario (Administrador)]]
+- [[🧑‍💻 UserStories/US02_editar_perfil_usuario_general.md|US02: Editar Perfil de Usuario (General)]]
+- [[🧑‍💻 UserStories/US03_desactivar_activar_usuario_general.md|US03: Desactivar/Activar Usuario (General - por Administrador)]]
 - [[🧑‍💻 UserStories/US50_listar_usuarios_admin.md|US50: Listar Usuarios (Administrador)]]
 
 ---
@@ -45,13 +45,13 @@ La gestión de usuarios implica el manejo de credenciales de acceso (email como 
 - **Entidades Principales:**
     - [[🏠 Entidades/Usuario.md]]
 - **User Stories:**
-    - [[🧑‍💻 UserStories/US25_registro_nuevo_usuario.md]]
-    - [[🧑‍💻 UserStories/US46_inicio_de_sesion.md]]
-    - [[🧑‍💻 UserStories/US26_cambio_contraseña.md]]
-    - [[🧑‍💻 UserStories/US47_recuperacion_contrasena.md]]
-    - [[🧑‍💻 UserStories/US45_asignar_modificar_roles_usuario.md]]
-    - [[🧑‍💻 UserStories/US48_editar_perfil_usuario_general.md]]
-    - [[🧑‍💻 UserStories/US49_desactivar_activar_usuario_general.md]]
+    - [[🧑‍💻 UserStories/US01_registro_nuevo_usuario.md]]
+    - [[🧑‍💻 UserStories/US04_inicio_de_sesion.md]]
+    - [[🧑‍💻 UserStories/US05_cambio_contraseña.md]]
+    - [[🧑‍💻 UserStories/US06_recuperacion_contrasena.md]]
+    - [[🧑‍💻 UserStories/US07_asignar_modificar_roles_usuario.md]]
+    - [[🧑‍💻 UserStories/US02_editar_perfil_usuario_general.md]]
+    - [[🧑‍💻 UserStories/US03_desactivar_activar_usuario_general.md]]
     - [[🧑‍💻 UserStories/US50_listar_usuarios_admin.md]]
 - **Entidades de Registro/Comunicación:**
     - [[🏠 Entidades/Log.md]]

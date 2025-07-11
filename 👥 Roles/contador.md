@@ -48,20 +48,13 @@ Un registro en la Entidad Contador (identificado por `user_id`):
 - [[📄 CasosDeUso/CU04_gestionar_contadores.md]] (gestiona usuarios con rol contador y sus asociaciones)
 - [[📄 CasosDeUso/CU07_notificaciones_email.md]] (contador recibe notificaciones)
 - [[📄 CasosDeUso/CU10_logs_y_errores.md]] (acciones sobre contador se loguean)
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
 
 ---
 
 ### 🧑‍💻 User Stories Relacionadas
 
-- [[🧑‍💻 UserStories/US09_registrar_nuevo_contador.md|US09: Registrar Contador y Asociar Propietarios]] (Creación del rol y gestión de asociaciones)
-- [[🧑‍💻 UserStories/US10_editar_contador.md|US10: Editar Contador (Administrador)]] (Principalmente edición de estado del rol y gestión de asociaciones)
-- [[🧑‍💻 UserStories/US41_enviar_notificacion_bienvenida_contador.md|US41: Enviar Notificación Bienvenida (Contador)]] (Desencadenada por asignación del rol)
-- [[🧑‍💻 UserStories/US42_notificacion_nueva_asociacion_contador.md|US42: Notificación Nueva Asociación Contador]] (Relacionada con la gestión de asociaciones)
-- [[🧑‍💻 UserStories/US45_asignar_modificar_roles_usuario.md]] (Proceso de asignación/modificación del rol Contador - no requiere datos adicionales obligatorios en Usuario)
-- [[🧑‍💻 UserStories/US48_editar_perfil_usuario_general.md]] (Edición de datos generales del usuario que aplican al contador)
-- [[🧑‍💻 UserStories/US49_desactivar_activar_usuario_general.md]] (Desencadena la eliminación lógica de esta entidad cuando se desactiva el usuario general con rol contador)
-- [[🧑‍💻 UserStories/US50_listar_usuarios_admin.md]] (Admin lista usuarios y puede filtrar por rol Contador)
+
 
 ---
 

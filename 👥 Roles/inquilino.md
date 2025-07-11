@@ -51,28 +51,12 @@ Un registro en la Entidad Inquilino (identificado por `user_id`):
 - [[📄 CasosDeUso/CU06_facturacion_automatica.md]] (inquilino es receptor de factura)
 - [[📄 CasosDeUso/CU07_notificaciones_email.md]] (inquilino recibe notificaciones)
 - [[📄 CasosDeUso/CU10_logs_y_errores.md]] (acciones sobre inquilino se loguean)
-- [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
+- [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]] (gestión de la cuenta de usuario asociada y sus datos generales)
 
 ---
 
 ### 🧑‍💻 User Stories Relacionadas
 
-- [[🧑‍💻 UserStories/US07_registrar_nuevo_inquilino.md|US07: Gestionar Inquilinos (Crear, Editar, Eliminar)]] (Enfoque administrativo, creación implica asignar rol, edición de datos generales via US48, eliminación via US49)
-- [[🧑‍💻 UserStories/US08_listar_inquilinos.md|US08: Listar inquilinos (Admin)]] (Admin lista usuarios con rol Inquilino - via US50 con filtro de rol)
-- [[🧑‍💻 UserStories/US13_cancelar_contrato.md]] (Impactado por eliminación de inquilino - llamado por lógica de desactivación del rol)
-- [[🧑‍💻 UserStories/US15_listar_facturas.md|US15: Listar facturas (Inquilino)]] (Inquilino visualiza sus facturas - usa datos de usuario)
-- [[🧑‍💻 UserStories/US16_notificacion_email.md|US16: Notificación email (como receptor)]] (Usuario con rol Inquilino recibe notificaciones)
-- [[🧑‍💻 UserStories/US25_registro_nuevo_usuario.md]] (Si implica crear un usuario con rol inquilino - usa US45 para asignación de rol y validación de datos de usuario)
-- [[🧑‍💻 UserStories/US31_listar_inquilinos_propietario.md|US31: Listar inquilinos (Propietario)]] (Propietario visualiza inquilinos asociados - usa datos de usuario)
-- [[🧑‍💻 UserStories/US36_listar_contratos_inquilino.md|US36: Listar contratos (Inquilino)]] (Usuario con rol Inquilino visualiza sus contratos - usa datos de usuario)
-- [[🧑‍💻 UserStories/US37_ver_detalles_contrato_inquilino.md|US37: Ver detalles contrato (Inquilino)]] (Usuario con rol Inquilino visualiza sus contratos - usa datos de usuario)
-- [[🧑‍💻 UserStories/US40_enviar_notificacion_bienvenida_inquilino.md|US40: Enviar notificación bienvenida (Inquilino)]] (Desencadenada por asignación del rol)
-- [[🧑‍💻 UserStories/US45_asignar_modificar_roles_usuario.md]] (Proceso de asignación/modificación del rol Inquilino - valida datos de usuario)
-- [[🧑‍💻 UserStories/US48_editar_perfil_usuario_general.md]] (Edición de datos generales del usuario, incluyendo RFC, que aplican al inquilino)
-- [[🧑‍💻 UserStories/US49_desactivar_activar_usuario_general.md]] (Desencadena la eliminación lógica de esta entidad cuando se desactiva el usuario general con rol inquilino)
-- [[🧑‍💻 UserStories/US50_listar_usuarios_admin.md]] (Admin lista usuarios y puede filtrar por rol Inquilino)
-
----
 
 ### 👥 Roles Relacionados
 

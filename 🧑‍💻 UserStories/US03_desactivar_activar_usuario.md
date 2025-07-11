@@ -1,8 +1,8 @@
-# US49
+# US03
 
 ## Desactivar/Activar Usuario (General - por Administrador)
 
-**Caso de Uso:** [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]]
+**Caso de Uso:** [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]]
 
 Como administrador, quiero poder desactivar o reactivar la cuenta de usuario general de cualquier usuario (excepto mi propia cuenta de administrador activa), para controlar el acceso al sistema por motivos de seguridad o administración. La desactivación general de un usuario debe desencadenar de forma transaccional la ejecución de las lógicas de desactivación específicas de cada rol que el usuario tenga asignado.
 
@@ -46,7 +46,7 @@ El administrador podrá seleccionar un usuario (que no sea su propia cuenta de a
 
 ## Relaciones
 
-- **Caso de Uso Principal:** [[📄 CasosDeUso/CU11_usuarios_y_accesos.md]]
+- **Caso de Uso Principal:** [[📄 CasosDeUso/CU01_usuarios_y_accesos.md]]
 - **Entidades:**
     - [[🏠 Entidades/Usuario.md]] (La entidad cuyo estado se gestiona)
     - [[🏠 Entidades/Log.md]] (Para registrar auditoría de la operación)
