@@ -1,0 +1,16 @@
+# Directorio raíz para buscar schemas y donde se generarán los outputs
+schema: ./src/interfaces/graphql/schemas/**/*.graphql # <-- Define la ruta a tus archivos .graphql
+
+# Define los archivos de salida y los plugins a usar
+generates:
+  ./src/interfaces/graphql/generated/graphql.ts: # <-- Ruta y nombre del archivo de salida para los tipos
+    plugins:
+      - typescript # Plugin para generar tipos básicos de GraphQL
+      - typescript-resolvers # Plugin para generar tipos para resolvers, útil para tipar tus funciones resolver
+
+# Opcional: Configuración para que los plugins resuelvan rutas usando tu tsconfig.json
+config:
+  namingConvention:
+    enumValues: keep # Opcional: Mantener nombres originales de enums
+  mappers: # Opcional: Mapear tipos de schema a entidades de dominio si es necesario
+    User: ../../domain/entities/User # Ejemplo: Mapear el tipo User de GraphQL a tu entidad de dominio User

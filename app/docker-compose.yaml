@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14-alpine # Usamos una imagen ligera de PostgreSQL
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER} # Variables de entorno para credenciales
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432" # Mapeamos el puerto de la DB al host
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persistencia de datos de la DB
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway # Ruta al Dockerfile del backend
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000" # Mapeamos el puerto de la API GraphQL al host (ej. 4000)
+    environment:
+      NODE_ENV: development # Entorno de Node.js
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - db # Aseguramos que la DB inicie antes que el backend
+    volumes:
+      - ./services/api-gateway:/usr/src/app # Montamos el código fuente para desarrollo (hot-reloading)
+      - /usr/src/app/node_modules # Evitamos que el host sobrescriba node_modules dentro del contenedor
+
+volumes:
+  db_data: # Define el volumen para la persistencia de la DB

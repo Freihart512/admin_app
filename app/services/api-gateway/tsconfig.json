@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+      "target": "es2020",                     /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', 'ES2022', 'ESNext'. */
+      "module": "commonjs",                   /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', 'ESNext'. */
+      "rootDir": "./src",                     /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+      "outDir": "./dist",                     /* Redirect output structure to the directory. */
+      "esModuleInterop": true,                /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
+      "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
+      "strict": true,                         /* Enable all strict type-checking options. */
+      "skipLibCheck": true,                   /* Skip type checking all .d.ts files. */
+      "sourceMap": true,                      /* Generates corresponding '.map' file. */
+      "baseUrl": "./",                        /* Specify the base directory to resolve non-relative module names. */
+      "paths": {                              /* Specify a set of entries that re-map import paths to lookup locations relative to the 'baseUrl'. */
+        "@domain/*": ["./src/domain/*"],
+        "@application/*": ["./src/application/*"],
+        "@infrastructure/*": ["./src/infrastructure/*"],
+        "@interfaces/*": ["./src/interfaces/*"],
+        "@shared/*": ["./src/shared/*"]
+      },
+      "types": [
+        "node",
+        "vitest/globals"
+      ],
+    },
+    "include": [
+      "src/**/*.ts"                           /* Include all .ts files in the src directory */
+    ],
+    "exclude": [
+      "node_modules",                         /* Exclude node_modules directory */
+    ],
+  }
+  

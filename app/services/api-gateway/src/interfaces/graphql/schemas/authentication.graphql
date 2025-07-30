@@ -1,0 +1,61 @@
+# Define el tipo de usuario que se devuelve al iniciar sesión
+type User {
+  id: ID!
+  email: String!
+  name: String
+  lastName: String
+  roles: [String!]!
+  # Puedes añadir más campos básicos del usuario aquí según sea necesario,
+  # pero evita exponer información sensible.
+}
+
+# Define el payload de respuesta para el inicio de sesión exitoso
+type LoginPayload {
+  token: String!
+  user: User!
+}
+
+# Define el payload de respuesta genérico para operaciones que solo indican éxito/fallo
+type MutationResponse {
+  success: Boolean!
+  message: String
+}
+
+# Define los tipos de entrada para las mutaciones
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RequestPasswordResetInput {
+  email: String!
+}
+
+input ResetPasswordInput {
+  token: String!
+  newPassword: String!
+  confirmNewPassword: String!
+}
+
+input ChangePasswordInput {
+  currentPassword: String!
+  newPassword: String!
+  confirmNewPassword: String!
+}
+
+# Define las mutaciones para las operaciones de autenticación
+
+type Mutation {
+  # Inicia sesión en la plataforma
+  login(input: LoginInput!): LoginPayload!
+
+  # Solicita un proceso de recuperación de contraseña
+  requestPasswordReset(input: RequestPasswordResetInput!): MutationResponse!
+
+  # Restablece la contraseña utilizando un token de recuperación
+  resetPassword(input: ResetPasswordInput!): MutationResponse!
+
+  # Cambia la contraseña de un usuario autenticado
+  changePassword(input: ChangePasswordInput!): MutationResponse!
+}
