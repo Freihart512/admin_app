@@ -1,17 +1,35 @@
 {
-	"dependencies": {
-		"@apollo/server": "^5.0.0",
-		"@graphql-tools/load-files": "^7.0.1",
-		"@graphql-tools/merge": "^9.1.1",
-		"body-parser": "^2.2.0",
-		"cors": "^2.8.5",
-		"express": "^5.1.0"
+	"name": "rental-plat",
+	"version": "1.0.0",
+	"description": "Raíz del monorepo para la plataforma...",
+	"scripts": {
+		"lint": "eslint \"{api-gateway}/**/src/**/*.{ts,js}\"",
+		"lint:fix": "pnpm lint --fix",
+		"format": "prettier --write \"{api-gateway}/**/*.{ts,js,json,md,yaml}\"",
+		"format:check": "prettier --check \"{api-gateway}/**/*.{ts,js,json,md,yaml}\"",
+		"test": "echo 'Run tests for specific projects or with a monorepo tool'",
+		"check": "pnpm lint && pnpm format:check",
+		"fix": "pnpm lint:fix && pnpm format"
 	},
+	"dependencies": {},
 	"devDependencies": {
-		"@types/bcrypt": "^6.0.0",
-		"@types/body-parser": "^1.19.6",
-		"@types/cors": "^2.8.19",
-		"@types/express": "^5.0.3",
-		"bcrypt": "^6.0.0"
+		"@typescript-eslint/eslint-plugin": "^8.38.0",
+		"@typescript-eslint/parser": "^8.38.0",
+		"eslint": "^9.32.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-prettier": "^5.0.0",
+		"husky": "^9.0.0",
+		"lint-staged": "^16.1.2",
+		"prettier": "^3.0.0",
+		"typescript": "^5.8.3"
+	},
+	"lint-staged": {
+		"api-gateway/**/*.{ts,js,jsx,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,md,yaml}": [
+			"prettier --write"
+		]
 	}
 }
