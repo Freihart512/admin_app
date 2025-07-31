@@ -1,6 +1,11 @@
+// app/services/api-gateway/src/infrastructure/event-dispatcher/InMemoryEventDispatcher.ts
 import { IEventDispatcher } from '../../shared/events/IEventDispatcher';
 import { IDomainEvent } from '../../shared/events/IDomainEvent';
- // Importamos las interfaces desde shared
+// Importamos las interfaces desde shared
+
+// Importa el nuevo evento de fallo
+import { HandlerExecutionFailedEvent } from '../../shared/events/application/HandlerExecutionFailedEvent';
+
 
 // Define un tipo para almacenar los manejadores de eventos por tipo de evento
 type EventHandler<T extends IDomainEvent> = (event: T) => Promise<void> | void;
@@ -57,22 +62,40 @@ export class InMemoryEventDispatcher implements IEventDispatcher {
     const handlers = this.handlers[event.type];
 
     if (handlers) {
-      // Ejecutar cada manejador de forma asíncrona.
-      // No esperamos el resultado de cada manejador para no bloquear el proceso de negocio que emitió el evento.
       handlers.forEach(handler => {
-        // Encapsular la ejecución en un Promise.resolve() y catch para manejar errores en los handlers
         Promise.resolve(handler(event))
           .catch(handlerError => {
             console.error(`Error handling event ${event.type} by a handler:`, handlerError);
-            // Podrías emitir un ApplicationErrorEvent aquí para registrar el fallo del handler
-            // Aunque esto podría llevar a bucles si el manejador de ApplicationErrorEvent también falla
+
+            // *** MODIFICACIÓN AQUÍ ***
+            // Emitir el nuevo evento de fallo de ejecución de manejador
+            const handlerFailedEvent = new HandlerExecutionFailedEvent({
+              originalEventType: event.type,
+              originalEventPayload: event.payload,
+              // Puedes intentar obtener el nombre del manejador si es posible (puede ser complejo)
+              // handlerName: handler.name || 'AnonymousHandler',
+              error: {
+                name: handlerError.name || 'UnknownError',
+                message: handlerError.message || 'No message',
+                stack: handlerError.stack,
+              },
+            });
+
+            // Despacha el evento de fallo.
+            // Es CRUCIAL que el manejador de HandlerExecutionFailedEvent NO emita eventos adicionales de error.
+            this.dispatch(handlerFailedEvent).catch(dispatchError => {
+                 // Si incluso el dispatch del HandlerExecutionFailedEvent falla, solo logueamos para evitar bucles
+                 console.error('FATAL: Failed to dispatch HandlerExecutionFailedEvent from handler error:', dispatchError);
+            });
+            // *** FIN DE LA MODIFICACIÓN ***
+
           });
       });
     } else {
       console.warn(`No handlers subscribed for event type: ${event.type}`);
     }
 
-    // Opcional: Si quieres esperar a que todos los manejadores terminen antes de que termine el dispatch (menos común para fire-and-forget)
+    // Opcional: Si quieres esperar a que todos los manejadores terminen antes de que termine el dispatch
     // if (handlers) {
     //   await Promise.all(handlers.map(handler => handler(event)));
     // }

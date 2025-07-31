@@ -1,27 +1,27 @@
 // Importamos el caso de uso que vamos a probar
-import { LoginUseCase } from './LoginUseCase';
+import { LoginUseCase } from '../LoginUseCase';
 // Importamos las implementaciones REALES de las dependencias que usan mocks globales
-import { PostgresUserRepository } from '../../../infrastructure/database/repositories/PostgresUserRepository';
-import { BCryptPasswordHasher } from '../../../infrastructure/services/BCryptPasswordHasher';
+import { PostgresUserRepository } from '../../../../infrastructure/database/repositories/PostgresUserRepository';
+import { BCryptPasswordHasher } from '../../../../infrastructure/services/BCryptPasswordHasher';
 // Importamos el dispatcher real o mockeamos la interfaz
-import { InMemoryEventDispatcher } from '../../../infrastructure/event-dispatcher/InMemoryEventDispatcher'; // O mockeamos la interfaz
-import { IEventDispatcher } from '../../../shared/events/IEventDispatcher'; // Si mockeas la interfaz
+import { InMemoryEventDispatcher } from '../../../../infrastructure/event-dispatcher/InMemoryEventDispatcher'; // O mockeamos la interfaz
+import { IEventDispatcher } from '../../../../shared/events/IEventDispatcher'; // Si mockeas la interfaz
 // Importamos la implementación REAL del generador de tokens
-import { JwtAuthTokenGenerator } from '../../../infrastructure/services/JwtAuthTokenGenerator';
+import { JwtAuthTokenGenerator } from '../../../../infrastructure/services/JwtAuthTokenGenerator';
 // Importamos las clases de eventos para verificar que se emiten correctamente
-import { UserLoggedInEvent } from '../../../shared/events/authentication/UserLoggedInEvent';
-import { UserLoginFailedEvent } from '../../../shared/events/authentication/UserLoginFailedEvent';
-import { ApplicationErrorEvent } from '../../../shared/events/application/ApplicationErrorEvent'; // Importamos el evento de error general
+import { UserLoggedInEvent } from '../../../../shared/events/authentication/UserLoggedInEvent';
+import { UserLoginFailedEvent } from '../../../../shared/events/authentication/UserLoginFailedEvent';
+import { ApplicationErrorEvent } from '../../../../shared/events/application/ApplicationErrorEvent'; // Importamos el evento de error general
 // Importamos la entidad User para crear datos de prueba
-import { User } from '../../../domain/entities/User';
+import { User } from '../../../../domain/entities/User';
 // Importamos errores de dominio e infraestructura
-import { InvalidCredentialsError } from '../../../domain/errors/authentication/InvalidCredentialsError';
-import { DatabaseError } from '../../../infrastructure/errors/DatabaseError'; // Importamos el error de infraestructura de DB
+import { InvalidCredentialsError } from '../../../../domain/errors/authentication/InvalidCredentialsError';
+import { DatabaseError } from '../../../../infrastructure/errors/DatabaseError'; // Importamos el error de infraestructura de DB
 
 // Importamos los mocks específicos de pg, bcrypt y jsonwebtoken para configurarlos en las pruebas
-import { mockQuery, mockPool } from '../../../testHelpers/globalMocks/pg'; // Importamos el mock de pool.query y la clase Pool mockeada
-import { mockCompare, mockHash } from '../../../testHelpers/globalMocks/bcrypt'; // Importamos los mocks de bcrypt
-import { mockSign } from '../../../testHelpers/globalMocks/jsonwebtoken'; // Importamos el mock de jsonwebtoken.sign
+import { mockQuery, mockPool } from '../../../../testHelpers/globalMocks/pg'; // Importamos el mock de pool.query y la clase Pool mockeada
+import { mockCompare, mockHash } from '../../../../testHelpers/globalMocks/bcrypt'; // Importamos los mocks de bcrypt
+import { mockSign } from '../../../../testHelpers/globalMocks/jsonwebtoken'; // Importamos el mock de jsonwebtoken.sign
 import { Pool } from 'pg';
 
 

@@ -1,4 +1,5 @@
-import { Pool } from 'pg';
+// app/services/api-gateway/src/composition/index.ts
+
 // Importaciones de Repositorios y Servicios de Dominio
 import { IUserRepository } from '../domain/repositories/IUserRepository';
 import { IPasswordHasher } from '../domain/services/IPasswordHasher';
@@ -18,6 +19,9 @@ import { IEventDispatcher } from '../shared/events/IEventDispatcher';
 import { UserLoggedInEvent } from '../shared/events/authentication/UserLoggedInEvent'; // Importamos los tipos de eventos para suscribirse
 import { UserLoginFailedEvent } from '../shared/events/authentication/UserLoginFailedEvent';
 // Importamos otros tipos de eventos que el manejador de auditoría deba escuchar
+
+// Importa el nuevo evento de fallo
+import { HandlerExecutionFailedEvent } from '../shared/events/application/HandlerExecutionFailedEvent';
 
 
 // Configuración de la base de datos
@@ -46,6 +50,8 @@ const auditLogEventHandler = new AuditLogEventHandler(auditLogRepository); // In
 // Suscribimos el manejador de auditoría a los eventos relevantes en el dispatcher
 eventDispatcher.subscribe(UserLoggedInEvent.type, auditLogEventHandler.handleUserLoggedInEvent.bind(auditLogEventHandler)); // Suscribimos el manejador de login exitoso
 eventDispatcher.subscribe(UserLoginFailedEvent.type, auditLogEventHandler.handleUserLoginFailedEvent.bind(auditLogEventHandler)); // Suscribimos el manejador de login fallido
+// Suscribimos el manejador de auditoría al nuevo evento de fallo de ejecución de manejador
+eventDispatcher.subscribe(HandlerExecutionFailedEvent.type, auditLogEventHandler.handleHandlerExecutionFailedEvent.bind(auditLogEventHandler));
 // Suscribe otros manejadores de eventos de auditoría aquí si los creas para otros eventos
 
 

@@ -1,9 +1,9 @@
 // Importamos la clase que vamos a probar
-import { JwtAuthTokenGenerator } from './JwtAuthTokenGenerator';
+import { JwtAuthTokenGenerator } from '../JwtAuthTokenGenerator';
 // Importamos la entidad User para crear datos de prueba
-import { User } from '../../domain/entities/User';
+import { User } from '../../../domain/entities/User';
 // Importamos los mocks de jsonwebtoken centralizados
-import { mockSign } from '../../testHelpers/globalMocks/jsonwebtoken';
+import { mockSign } from '../../../testHelpers/globalMocks/jsonwebtoken';
 
 
 describe('JwtAuthTokenGenerator (Unit Test - Mocking jsonwebtoken)', () => {

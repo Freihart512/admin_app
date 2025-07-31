@@ -1,13 +1,13 @@
 // Importamos el mock del Pool y los mocks de los métodos que vamos a usar
 import { Pool } from 'pg';
-import { mockQuery, mockPool } from '../../../testHelpers/globalMocks/pg';
+import { mockQuery, mockPool } from '../../../../testHelpers/globalMocks/pg';
 
-import { PostgresUserRepository } from './PostgresUserRepository';
-import { User } from '../../../domain/entities/User';
-import { UserNotFoundError } from '../../../domain/errors/user/UserNotFoundError';
-import { EmailAlreadyExistsError } from '../../../domain/errors/user/EmailAlreadyExistsError';
-import { RfcAlreadyExistsError } from '../../../domain/errors/user/RfcAlreadyExistsError';
-import { DatabaseError } from '../../../infrastructure/errors/DatabaseError';
+import { PostgresUserRepository } from '../PostgresUserRepository';
+import { User } from '../../../../domain/entities/User';
+import { UserNotFoundError } from '../../../../domain/errors/user/UserNotFoundError';
+import { EmailAlreadyExistsError } from '../../../../domain/errors/user/EmailAlreadyExistsError';
+import { RfcAlreadyExistsError } from '../../../../domain/errors/user/RfcAlreadyExistsError';
+import { DatabaseError } from '../../../errors/DatabaseError';
 
 describe('PostgresUserRepository (Infrastructure Integration Test)', () => {
   let postgresUserRepository: PostgresUserRepository;

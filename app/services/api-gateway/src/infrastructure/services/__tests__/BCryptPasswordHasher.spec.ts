@@ -1,6 +1,6 @@
-import { BCryptPasswordHasher } from './BCryptPasswordHasher';
+import { BCryptPasswordHasher } from '../BCryptPasswordHasher';
 // Importa los mocks reutilizables
-import { mockHash, mockCompare } from '../../testHelpers/globalMocks/bcrypt';
+import { mockHash, mockCompare } from '../../../testHelpers/globalMocks/bcrypt';
 
 describe('BCryptPasswordHasher (Unit Test - Mocking bcrypt)', () => {
   let passwordHasher: BCryptPasswordHasher;

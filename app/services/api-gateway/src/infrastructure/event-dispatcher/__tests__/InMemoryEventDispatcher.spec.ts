@@ -1,7 +1,7 @@
 // Importamos la clase que vamos a probar
-import { InMemoryEventDispatcher } from './InMemoryEventDispatcher';
+import { InMemoryEventDispatcher } from '../InMemoryEventDispatcher';
 // Importamos la interfaz base de eventos para crear eventos de prueba
-import { IDomainEvent } from '../../shared/events/IDomainEvent';
+import { IDomainEvent } from '../../../shared/events/IDomainEvent';
 
 
 // Definimos una interfaz para un evento de prueba
