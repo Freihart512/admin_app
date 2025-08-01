@@ -1,6 +1,5 @@
 import { ApolloServer } from '@apollo/server';
-//import { expressMiddleware } from '@apollo/server/express4';
-// import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugins/drainHttpServer';
+import { expressMiddleware } from '@as-integrations/express5';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
@@ -10,13 +9,11 @@ import { mergeResolvers, mergeTypeDefs } from '@graphql-tools/merge';
 import { join } from 'path';
 
 import authenticationResolvers from './interfaces/graphql/resolvers/authentication.resolvers';
-
 import { connectDatabase } from './infrastructure/database';
 
 const typeDefs = mergeTypeDefs(
   loadFilesSync(join(__dirname, './interfaces/graphql/schemas'), { extensions: ['graphql'] })
 );
-
 const resolvers = mergeResolvers([authenticationResolvers]);
 
 interface MyContext {}
@@ -30,28 +27,24 @@ const server = new ApolloServer<MyContext>({
 });
 
 async function startServer() {
-  try {
-    await connectDatabase();
+  await connectDatabase();
+  await server.start();
 
-    await server.start();
+  app.use(
+    '/graphql',
+    cors<cors.CorsRequest>(),
+    bodyParser.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        // tu lógica de autenticación, etc.
+        return {};
+      },
+    })
+  );
 
-    app.use(
-      '/graphql',
-      cors<cors.CorsRequest>(),
-      bodyParser.json(),
-      expressMiddleware(server, {
-        context: async ({ req }) => {
-          return {};
-        },
-      })
-    );
-
-    const PORT = process.env.PORT || 4000;
-    await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
-    console.info(`🚀 Server ready at http://localhost:${PORT}/graphql`);
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  const PORT = process.env.PORT || 4000;
+  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
+  console.info(`🚀 Server ready at http://localhost:${PORT}/graphql`);
 }
+
 startServer();
