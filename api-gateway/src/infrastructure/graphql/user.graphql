@@ -1,0 +1,85 @@
+graphql
+enum BusinessRole {
+  OWNER
+  TENANT
+  ACCOUNTANT
+}
+
+enum AccountStatus {
+  ACTIVE
+  INACTIVE
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  lastName: String!
+  phoneNumber: String
+  address: String
+  rfc: String
+  isAdmin: Boolean!
+  roles: [BusinessRole!]!
+  status: AccountStatus!
+  createdAt: String!
+  createdBy: String!
+  updatedAt: String
+  updatedBy: String
+  deletedAt: String
+}
+
+input CreateUserInput {
+  email: String!
+  password: String
+  isAdmin: Boolean
+  roles: [BusinessRole!]
+  name: String!
+  lastName: String!
+  phoneNumber: String
+  address: String
+  rfc: String
+}
+
+input UpdateUserInput {
+  name: String
+  lastName: String
+  phoneNumber: String
+  address: String
+  rfc: String
+  status: AccountStatus
+}
+
+input AssignRoleInput {
+  userId: ID!
+  roles: [BusinessRole!]!
+}
+
+input RemoveRoleInput {
+  userId: ID!
+  roles: [BusinessRole!]!
+}
+
+input ToggleAdminInput {
+  userId: ID!
+  isAdmin: Boolean!
+}
+
+type PaginatedUsers {
+  users: [User!]!
+  totalCount: Int!
+  hasNextPage: Boolean!
+}
+
+type Query {
+  users(limit: Int = 10, offset: Int = 0): PaginatedUsers!
+  user(id: ID!): User
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  updateUser(id: ID!, input: UpdateUserInput!): User!
+  deleteUser(id: ID!): User!
+  assignRole(input: AssignRoleInput!): User!
+  removeRole(input: RemoveRoleInput!): User!
+  toggleAdmin(input: ToggleAdminInput!): User!
+}

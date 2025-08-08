@@ -1,0 +1,12 @@
+{
+  "name": "rental-plat",
+  "version": "1.0.0",
+  "description": "rental platform",
+  "main": "index.js",
+  "scripts": {
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.14.0"
+}
