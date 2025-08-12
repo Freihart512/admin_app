@@ -2,7 +2,7 @@
 import { ValueObject } from '../../@shared/value-objects/base.value-object';
 import { InvalidPhoneNumberError } from '../errors/invalid-phone-number.error';
 
-export class PhoneNumber extends ValueObject<string, undefined> {
+export class PhoneNumber extends ValueObject<string> {
   private static readonly PHONE_REGEX = /^\+?[0-9]{10,15}$/;
 
   public static create(value: string | undefined): PhoneNumber {

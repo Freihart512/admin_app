@@ -6,3 +6,4 @@ export { NotNullViolationError } from './not-null-violation.error';
 export { ForeignKeyViolationError } from './foreign-key-violation.error';
 export { ConcurrencyConflictError } from './concurrency-conflict.error';
 export { ServiceUnavailableError } from './service-unavailable.error';
+export { InvalidFormatError } from './invalid-format.error';

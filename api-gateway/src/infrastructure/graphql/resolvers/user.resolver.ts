@@ -1,12 +1,23 @@
 import { Resolver, Query, Mutation, Args, ID, Int } from '@nestjs/graphql';
-import { CreateUserUseCase } from '@application/user/use-cases/create-user.use-case'
-import { CreateUserInput, User as GraphQLUser,  } from '@infrastructure/graphql/dtos/user.graphql.dtos'; 
+import { CreateUserUseCase } from '@application/user/use-cases/create-user.use-case';
+import { CreateUserInput, User as GraphQLUser } from '@infrastructure/graphql/dtos/user.graphql.dtos';
 import { CreateUserDto } from '@application/user/dtos/user.dto';
-import { UserEntityType as DomainUser, UserErrors } from '@domain/user/user.types';
-import { HashingService } from '@domain/@shared/ports/hashing.service.port';
-import { RFCValidator } from '@domain/@shared/ports/rfc.validator.port';
-import { UUIDValidator } from '@domain/@shared/ports/uuid.validator.port';
+import { UserEntityType as DomainUser } from '@domain/user/user.types';
+// Import domain error classes directly.  The `UserErrors` namespace
+// referenced previously does not exist on the compiled code.
+import {
+  AlreadyValueExistError,
+  AdminCannotHaveBusinessRolesError,
+  NonAdminMustHaveRolesError,
+  AddressRequiredForOwnerError,
+} from '@domain/user/errors';
 import { ServiceUnavailableError } from '@shared/errors/service-unavailable.error';
+// Instantiate infrastructure services directly in the resolver.  These
+// classes implement the domain ports and require no external
+// configuration.
+import { BcryptHashingService } from '@infrastructure/services/bcrypt-hashing.service';
+import { ValidateRFC } from '@infrastructure/validators/rfc.validator';
+import { ValidateUUID } from '@infrastructure/validators/uuid.validator';
 import { v4 as uuidv4 } from 'uuid';
 
 // Import NestJS HTTP exceptions for mapping
@@ -20,12 +31,7 @@ import {
 
 @Resolver(() => GraphQLUser)
 export class UserResolver {
-  constructor(
-    private readonly createUserUseCase: CreateUserUseCase,
-    private readonly hashingService: HashingService,
-    private readonly rfcValidator: RFCValidator,
-    private readonly uuidValidator: UUIDValidator,
-  ) { }
+  constructor(private readonly createUserUseCase: CreateUserUseCase) {}
 
   @Mutation(() => GraphQLUser)
   async createUser(
@@ -40,37 +46,35 @@ export class UserResolver {
     const userId = uuidv4();
 
     const createUserDto: CreateUserDto = {
-      id: userId, // Pass the generated UUID string
+      id: userId,
       email: input.email,
-      password: input.password,
       isAdmin: input.isAdmin ?? false,
       name: input.name,
       lastName: input.lastName,
       phoneNumber: input.phoneNumber,
       roles: input.roles ?? [],
-      address: input.address, // Include address
-      rfc: input.rfc, // Include rfc
+      address: input.address,
+      rfc: input.rfc,
     };
 
     try {
       const createdUser: DomainUser = await this.createUserUseCase.execute(
-        createUserDto,
-        this.hashingService,
-        this.rfcValidator,
-        this.uuidValidator,
-        // Pass currentUser if implemented
-        // currentUser,
+        createUserDto
       );
       return this.mapDomainUserToGraphQLUser(createdUser);
     } catch (error: any) { // Catch any thrown error
       // Map domain/application errors to NestJS HTTP exceptions
-      if (error instanceof UserErrors.AlreadyValueExistError) {
+      if (error instanceof AlreadyValueExistError) {
         throw new ConflictException(error.message);
       }
       if (error instanceof ServiceUnavailableError) {
         throw new ServiceUnavailableException(error.message);
       }
-      if (error instanceof UserErrors.AdminCannotHaveBusinessRolesError || error instanceof UserErrors.NonAdminMustHaveRolesError || error instanceof UserErrors.AddressRequiredForOwnerError) {
+      if (
+        error instanceof AdminCannotHaveBusinessRolesError ||
+        error instanceof NonAdminMustHaveRolesError ||
+        error instanceof AddressRequiredForOwnerError
+      ) {
         throw new BadRequestException(error.message);
       }
       console.error('Unexpected error in UserResolver.createUser:', error);

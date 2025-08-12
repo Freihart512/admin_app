@@ -1,3 +1,3 @@
-export interface UUIDValidator {
-    validate(uuid: string): boolean;
+export interface UuidValidatorPort {
+  validate(uuid: string): boolean;
 }
