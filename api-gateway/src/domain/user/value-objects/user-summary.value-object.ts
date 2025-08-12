@@ -2,18 +2,13 @@
 import { ValueObject } from '../../@shared/value-objects/base.value-object';
 import { UUID } from '../../@shared/value-objects/uuid.value-object';
 import { EmailAddress } from './email-address.value-object';
-import { AccountStatus } from '../../../@shared/core/types';
+import { AccountStatus } from '../user.types';
 import { InvalidUserSummaryError } from '../errors/invalid-user-summary.error';
+import { UserSummaryType, UserSummaryProps } from '../user.types';
 
-export interface UserSummaryProps {
-  id: UUID;
-  name: string;
-  lastName: string;
-  email: EmailAddress;
-  status: AccountStatus;
-}
 
-export class UserSummary extends ValueObject<UserSummaryProps> {
+
+export class UserSummary extends ValueObject<UserSummaryType, undefined> {
   public static create(props: UserSummaryProps): UserSummary {
     return new UserSummary(props);
   }

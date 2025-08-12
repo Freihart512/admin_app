@@ -13,6 +13,7 @@ export class ValidateRFC implements RFCValidator {
     const result = validateRfc(rfc);
 
     if (!result.isValid) {
+      console.error(`Invalid RFC: ${rfc}, validation result: ${JSON.stringify(result.errors)}`);
       throw new RFCValidationInfraError(rfc);
     }
     return true

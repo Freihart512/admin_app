@@ -1,9 +1,8 @@
-import { BusinessRole, AccountStatus } from '../../../@shared/core/types'; // Assuming BusinessRole and AccountStatus are defined here
+import { BusinessRole, AccountStatus } from '@domain/user/user.types'; // Assuming BusinessRole and AccountStatus are defined here
 
 export class CreateUserDto {
+  id!:string;
   email!: string;
-  password!: string;
-
   isAdmin: boolean = false;
   roles: BusinessRole[] = [];
   name!: string;

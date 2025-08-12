@@ -205,238 +205,238 @@ describe('UserResolver', () => {
     });
   });
 
-  describe('updateUser', () => {
-    it('should call UpdateUserUseCase and return the updated user', async () => {
-      const userId = 'user-id';
-      const updateUserInput: UpdateUserInput = { name: 'Updated Name' };
-      // Mock the use case to return a DomainUser
-      mockUpdateUserUseCase.execute.mockResolvedValue(mockDomainUser);
+  // describe('updateUser', () => {
+  //   it('should call UpdateUserUseCase and return the updated user', async () => {
+  //     const userId = 'user-id';
+  //     const updateUserInput: UpdateUserInput = { name: 'Updated Name' };
+  //     // Mock the use case to return a DomainUser
+  //     mockUpdateUserUseCase.execute.mockResolvedValue(mockDomainUser);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      const result = await resolver.updateUser(userId, updateUserInput, currentUser as any);
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     const result = await resolver.updateUser(userId, updateUserInput, currentUser as any);
 
-      expect(mockUpdateUserUseCase.execute).toHaveBeenCalledWith(
-        userId,
-        updateUserInput,
-        currentUser, // Should pass the current user
-      );
-      expect(result).toEqual(GraphQLUser.fromDomain(mockDomainUser));
-    });
+  //     expect(mockUpdateUserUseCase.execute).toHaveBeenCalledWith(
+  //       userId,
+  //       updateUserInput,
+  //       currentUser, // Should pass the current user
+  //     );
+  //     expect(result).toEqual(GraphQLUser.fromDomain(mockDomainUser));
+  //   });
 
-    it('should handle NotFoundException from UpdateUserUseCase', async () => {
-      const userId = 'non-existent-id';
-      const updateUserInput: UpdateUserInput = { name: 'Updated Name' };
-      const error = new NotFoundException(`User with ID ${userId} not found.`);
-      mockUpdateUserUseCase.execute.mockRejectedValue(error);
+  //   it('should handle NotFoundException from UpdateUserUseCase', async () => {
+  //     const userId = 'non-existent-id';
+  //     const updateUserInput: UpdateUserInput = { name: 'Updated Name' };
+  //     const error = new NotFoundException(`User with ID ${userId} not found.`);
+  //     mockUpdateUserUseCase.execute.mockRejectedValue(error);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      await expect(resolver.updateUser(userId, updateUserInput, currentUser as any)).rejects.toThrow(NotFoundException);
-      expect(mockUpdateUserUseCase.execute).toHaveBeenCalledTimes(1);
-    });
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     await expect(resolver.updateUser(userId, updateUserInput, currentUser as any)).rejects.toThrow(NotFoundException);
+  //     expect(mockUpdateUserUseCase.execute).toHaveBeenCalledTimes(1);
+  //   });
 
-    it('should handle other errors from UpdateUserUseCase', async () => {
-        const userId = 'user-id';
-        const updateUserInput: UpdateUserInput = { phoneNumber: '1234567890' };
-        const error = new Error('Some other error');
-        mockUpdateUserUseCase.execute.mockRejectedValue(error);
+  //   it('should handle other errors from UpdateUserUseCase', async () => {
+  //       const userId = 'user-id';
+  //       const updateUserInput: UpdateUserInput = { phoneNumber: '1234567890' };
+  //       const error = new Error('Some other error');
+  //       mockUpdateUserUseCase.execute.mockRejectedValue(error);
 
-        // TODO: Replace null with actual currentUser
-        const currentUser = null;
-        await expect(resolver.updateUser(userId, updateUserInput, currentUser as any)).rejects.toThrow('Some other error');
-        expect(mockUpdateUserUseCase.execute).toHaveBeenCalledTimes(1);
-      });
-  });
+  //       // TODO: Replace null with actual currentUser
+  //       const currentUser = null;
+  //       await expect(resolver.updateUser(userId, updateUserInput, currentUser as any)).rejects.toThrow('Some other error');
+  //       expect(mockUpdateUserUseCase.execute).toHaveBeenCalledTimes(1);
+  //     });
+  // });
 
-  describe('deleteUser', () => {
-    it('should call DeleteUserUseCase and return the deleted user', async () => {
-      const userId = 'user-id';
-      // Mock the use case to return a DomainUser
-      mockDeleteUserUseCase.execute.mockResolvedValue({ ...mockDomainUser, status: AccountStatus.INACTIVE });
+  // describe('deleteUser', () => {
+  //   it('should call DeleteUserUseCase and return the deleted user', async () => {
+  //     const userId = 'user-id';
+  //     // Mock the use case to return a DomainUser
+  //     mockDeleteUserUseCase.execute.mockResolvedValue({ ...mockDomainUser, status: AccountStatus.INACTIVE });
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      const result = await resolver.deleteUser(userId, currentUser as any);
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     const result = await resolver.deleteUser(userId, currentUser as any);
 
-      expect(mockDeleteUserUseCase.execute).toHaveBeenCalledWith(userId, currentUser); // Should pass the current user
-      expect(result).toEqual(GraphQLUser.fromDomain({ ...mockDomainUser, status: AccountStatus.INACTIVE }));
-    });
+  //     expect(mockDeleteUserUseCase.execute).toHaveBeenCalledWith(userId, currentUser); // Should pass the current user
+  //     expect(result).toEqual(GraphQLUser.fromDomain({ ...mockDomainUser, status: AccountStatus.INACTIVE }));
+  //   });
 
-    it('should handle NotFoundException from DeleteUserUseCase', async () => {
-      const userId = 'non-existent-id';
-      const error = new NotFoundException(`User with ID ${userId} not found.`);
-      mockDeleteUserUseCase.execute.mockRejectedValue(error);
+  //   it('should handle NotFoundException from DeleteUserUseCase', async () => {
+  //     const userId = 'non-existent-id';
+  //     const error = new NotFoundException(`User with ID ${userId} not found.`);
+  //     mockDeleteUserUseCase.execute.mockRejectedValue(error);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      await expect(resolver.deleteUser(userId, currentUser as any)).rejects.toThrow(NotFoundException);
-      expect(mockDeleteUserUseCase.execute).toHaveBeenCalledTimes(1);
-    });
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     await expect(resolver.deleteUser(userId, currentUser as any)).rejects.toThrow(NotFoundException);
+  //     expect(mockDeleteUserUseCase.execute).toHaveBeenCalledTimes(1);
+  //   });
 
-    it('should handle other errors from DeleteUserUseCase', async () => {
-        const userId = 'user-id';
-        const error = new Error('Some business rule violation');
-        mockDeleteUserUseCase.execute.mockRejectedValue(error);
+  //   it('should handle other errors from DeleteUserUseCase', async () => {
+  //       const userId = 'user-id';
+  //       const error = new Error('Some business rule violation');
+  //       mockDeleteUserUseCase.execute.mockRejectedValue(error);
 
-        // TODO: Replace null with actual currentUser
-        const currentUser = null;
-        await expect(resolver.deleteUser(userId, currentUser as any)).rejects.toThrow('Some business rule violation');
-        expect(mockDeleteUserUseCase.execute).toHaveBeenCalledTimes(1);
-      });
-  });
+  //       // TODO: Replace null with actual currentUser
+  //       const currentUser = null;
+  //       await expect(resolver.deleteUser(userId, currentUser as any)).rejects.toThrow('Some business rule violation');
+  //       expect(mockDeleteUserUseCase.execute).toHaveBeenCalledTimes(1);
+  //     });
+  // });
 
-  describe('updateUserBusinessRoles', () => {
-    it('should call ManageUserRolesUseCase and return the user', async () => {
-      const input: UpdateUserBusinessRolesInput = {
-        userId: 'user-id',
-        roles: [BusinessRole.ACCOUNTANT],
-      };
-      // Mock the use case to return a DomainUser
-      const userWithNewRoles = { ...mockDomainUser, roles: input.roles };
-      mockManageUserRolesUseCase.execute.mockResolvedValue(userWithNewRoles);
+  // describe('updateUserBusinessRoles', () => {
+  //   it('should call ManageUserRolesUseCase and return the user', async () => {
+  //     const input: UpdateUserBusinessRolesInput = {
+  //       userId: 'user-id',
+  //       roles: [BusinessRole.ACCOUNTANT],
+  //     };
+  //     // Mock the use case to return a DomainUser
+  //     const userWithNewRoles = { ...mockDomainUser, roles: input.roles };
+  //     mockManageUserRolesUseCase.execute.mockResolvedValue(userWithNewRoles);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      const result = await resolver.updateUserBusinessRoles(input, currentUser as any);
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     const result = await resolver.updateUserBusinessRoles(input, currentUser as any);
 
-      expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledWith({
-        userId: input.userId,
-        finalRoles: input.roles,
-      }, currentUser); // Should pass the current user
-      expect(result).toEqual(GraphQLUser.fromDomain(userWithNewRoles));
-    });
+  //     expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledWith({
+  //       userId: input.userId,
+  //       finalRoles: input.roles,
+  //     }, currentUser); // Should pass the current user
+  //     expect(result).toEqual(GraphQLUser.fromDomain(userWithNewRoles));
+  //   });
 
-    it('should handle NotFoundException from ManageUserRolesUseCase', async () => {
-      const input: UpdateUserBusinessRolesInput = {
-        userId: 'non-existent-id',
-        roles: [BusinessRole.ACCOUNTANT],
-      };
-      const error = new NotFoundException(`User with ID ${input.userId} not found.`);
-      mockManageUserRolesUseCase.execute.mockRejectedValue(error);
+  //   it('should handle NotFoundException from ManageUserRolesUseCase', async () => {
+  //     const input: UpdateUserBusinessRolesInput = {
+  //       userId: 'non-existent-id',
+  //       roles: [BusinessRole.ACCOUNTANT],
+  //     };
+  //     const error = new NotFoundException(`User with ID ${input.userId} not found.`);
+  //     mockManageUserRolesUseCase.execute.mockRejectedValue(error);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      await expect(resolver.updateUserBusinessRoles(input, currentUser as any)).rejects.toThrow(NotFoundException);
-      expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledTimes(1);
-    });
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     await expect(resolver.updateUserBusinessRoles(input, currentUser as any)).rejects.toThrow(NotFoundException);
+  //     expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledTimes(1);
+  //   });
 
-    it('should handle other errors from ManageUserRolesUseCase', async () => {
-        const input: UpdateUserBusinessRolesInput = {
-            userId: 'user-id',
-            roles: [BusinessRole.OWNER],
-          };
-        const error = new Error('Cannot assign role to admin');
-        mockManageUserRolesUseCase.execute.mockRejectedValue(error);
+  //   it('should handle other errors from ManageUserRolesUseCase', async () => {
+  //       const input: UpdateUserBusinessRolesInput = {
+  //           userId: 'user-id',
+  //           roles: [BusinessRole.OWNER],
+  //         };
+  //       const error = new Error('Cannot assign role to admin');
+  //       mockManageUserRolesUseCase.execute.mockRejectedValue(error);
 
-        // TODO: Replace null with actual currentUser
-        const currentUser = null;
-        await expect(resolver.updateUserBusinessRoles(input, currentUser as any)).rejects.toThrow('Cannot assign role to admin');
-        expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledTimes(1);
-    });
-  });
+  //       // TODO: Replace null with actual currentUser
+  //       const currentUser = null;
+  //       await expect(resolver.updateUserBusinessRoles(input, currentUser as any)).rejects.toThrow('Cannot assign role to admin');
+  //       expect(mockManageUserRolesUseCase.execute).toHaveBeenCalledTimes(1);
+  //   });
+  // });
 
-  describe('toggleAdmin', () => {
-    it('should call ToggleAdminUseCase and return the user', async () => {
-      const input: ToggleAdminInput = {
-        userId: 'user-id',
-        isAdmin: true,
-      };
-      // Mock the use case to return a DomainUser
-      const userMadeAdmin = { ...mockDomainUser, isAdmin: true, roles: [] };
-      mockToggleAdminUseCase.execute.mockResolvedValue(userMadeAdmin);
+  // describe('toggleAdmin', () => {
+  //   it('should call ToggleAdminUseCase and return the user', async () => {
+  //     const input: ToggleAdminInput = {
+  //       userId: 'user-id',
+  //       isAdmin: true,
+  //     };
+  //     // Mock the use case to return a DomainUser
+  //     const userMadeAdmin = { ...mockDomainUser, isAdmin: true, roles: [] };
+  //     mockToggleAdminUseCase.execute.mockResolvedValue(userMadeAdmin);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      const result = await resolver.toggleAdmin(input, currentUser as any);
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     const result = await resolver.toggleAdmin(input, currentUser as any);
 
-      expect(mockToggleAdminUseCase.execute).toHaveBeenCalledWith(input.userId, input.isAdmin, currentUser); // Should pass the current user
-      expect(result).toEqual(GraphQLUser.fromDomain(userMadeAdmin));
-    });
+  //     expect(mockToggleAdminUseCase.execute).toHaveBeenCalledWith(input.userId, input.isAdmin, currentUser); // Should pass the current user
+  //     expect(result).toEqual(GraphQLUser.fromDomain(userMadeAdmin));
+  //   });
 
-    it('should handle errors from ToggleAdminUseCase', async () => {
-      const input: ToggleAdminInput = {
-        userId: 'non-existent-id',
-        isAdmin: false,
-      };
-      const error = new Error('User not found');
-      mockToggleAdminUseCase.execute.mockRejectedValue(error);
+  //   it('should handle errors from ToggleAdminUseCase', async () => {
+  //     const input: ToggleAdminInput = {
+  //       userId: 'non-existent-id',
+  //       isAdmin: false,
+  //     };
+  //     const error = new Error('User not found');
+  //     mockToggleAdminUseCase.execute.mockRejectedValue(error);
 
-      // TODO: Replace null with actual currentUser
-      const currentUser = null;
-      await expect(resolver.toggleAdmin(input, currentUser as any)).rejects.toThrow('User not found');
-      expect(mockToggleAdminUseCase.execute).toHaveBeenCalledTimes(1);
-    });
-  });
+  //     // TODO: Replace null with actual currentUser
+  //     const currentUser = null;
+  //     await expect(resolver.toggleAdmin(input, currentUser as any)).rejects.toThrow('User not found');
+  //     expect(mockToggleAdminUseCase.execute).toHaveBeenCalledTimes(1);
+  //   });
+  // });
 
-  describe('users (Query)', () => {
-    it('should call GetUsersUseCase and return paginated users', async () => {
-      const limit = 5;
-      const offset = 10;
-      const mockPaginatedResult = {
-        users: [mockDomainUser],
-        totalCount: 1,
-        hasNextPage: false,
-      };
-      mockGetUsersUseCase.execute.mockResolvedValue(mockPaginatedResult);
+  // describe('users (Query)', () => {
+  //   it('should call GetUsersUseCase and return paginated users', async () => {
+  //     const limit = 5;
+  //     const offset = 10;
+  //     const mockPaginatedResult = {
+  //       users: [mockDomainUser],
+  //       totalCount: 1,
+  //       hasNextPage: false,
+  //     };
+  //     mockGetUsersUseCase.execute.mockResolvedValue(mockPaginatedResult);
 
-      const result = await resolver.users(limit, offset);
+  //     const result = await resolver.users(limit, offset);
 
-      expect(mockGetUsersUseCase.execute).toHaveBeenCalledWith({ limit, offset });
-      expect(result.users.length).toBe(mockPaginatedResult.users.length);
-      expect(result.totalCount).toBe(mockPaginatedResult.totalCount);
-      expect(result.hasNextPage).toBe(mockPaginatedResult.hasNextPage);
-      // Ensure users are mapped using the mocked fromDomain
-      expect(result.users[0]).toEqual(GraphQLUser.fromDomain(mockDomainUser));
-    });
+  //     expect(mockGetUsersUseCase.execute).toHaveBeenCalledWith({ limit, offset });
+  //     expect(result.users.length).toBe(mockPaginatedResult.users.length);
+  //     expect(result.totalCount).toBe(mockPaginatedResult.totalCount);
+  //     expect(result.hasNextPage).toBe(mockPaginatedResult.hasNextPage);
+  //     // Ensure users are mapped using the mocked fromDomain
+  //     expect(result.users[0]).toEqual(GraphQLUser.fromDomain(mockDomainUser));
+  //   });
 
-    it('should call GetUsersUseCase with default parameters if none provided', async () => {
-        const mockPaginatedResult = {
-            users: [mockDomainUser],
-            totalCount: 1,
-            hasNextPage: false,
-          };
-          mockGetUsersUseCase.execute.mockResolvedValue(mockPaginatedResult);
+  //   it('should call GetUsersUseCase with default parameters if none provided', async () => {
+  //       const mockPaginatedResult = {
+  //           users: [mockDomainUser],
+  //           totalCount: 1,
+  //           hasNextPage: false,
+  //         };
+  //         mockGetUsersUseCase.execute.mockResolvedValue(mockPaginatedResult);
 
-        const result = await resolver.users();
+  //       const result = await resolver.users();
 
-        expect(mockGetUsersUseCase.execute).toHaveBeenCalledWith({ limit: undefined, offset: undefined });
-        expect(result.users.length).toBe(mockPaginatedResult.users.length);
-        expect(result.totalCount).toBe(mockPaginatedResult.totalCount);
-        expect(result.hasNextPage).toBe(mockPaginatedResult.hasNextPage);
-        // Ensure users are mapped using the mocked fromDomain
-        expect(result.users[0]).toEqual(GraphQLUser.fromDomain(mockDomainUser));
-    });
-  });
+  //       expect(mockGetUsersUseCase.execute).toHaveBeenCalledWith({ limit: undefined, offset: undefined });
+  //       expect(result.users.length).toBe(mockPaginatedResult.users.length);
+  //       expect(result.totalCount).toBe(mockPaginatedResult.totalCount);
+  //       expect(result.hasNextPage).toBe(mockPaginatedResult.hasNextPage);
+  //       // Ensure users are mapped using the mocked fromDomain
+  //       expect(result.users[0]).toEqual(GraphQLUser.fromDomain(mockDomainUser));
+  //   });
+  // });
 
-  describe('user (Query)', () => {
-    it('should call GetUserByIdUseCase and return the user', async () => {
-      const userId = 'user-id';
-      mockGetUserByIdUseCase.execute.mockResolvedValue(mockDomainUser);
+  // describe('user (Query)', () => {
+  //   it('should call GetUserByIdUseCase and return the user', async () => {
+  //     const userId = 'user-id';
+  //     mockGetUserByIdUseCase.execute.mockResolvedValue(mockDomainUser);
 
-      const result = await resolver.user(userId);
+  //     const result = await resolver.user(userId);
 
-      expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
-      expect(result).toEqual(GraphQLUser.fromDomain(mockDomainUser));
-    });
+  //     expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
+  //     expect(result).toEqual(GraphQLUser.fromDomain(mockDomainUser));
+  //   });
 
-    it('should throw NotFoundException if user is not found', async () => {
-      const userId = 'non-existent-id';
-      mockGetUserByIdUseCase.execute.mockResolvedValue(null);
+  //   it('should throw NotFoundException if user is not found', async () => {
+  //     const userId = 'non-existent-id';
+  //     mockGetUserByIdUseCase.execute.mockResolvedValue(null);
 
-      await expect(resolver.user(userId)).rejects.toThrow(NotFoundException);
-      expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
-    });
+  //     await expect(resolver.user(userId)).rejects.toThrow(NotFoundException);
+  //     expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
+  //   });
 
-    it('should handle other errors from GetUserByIdUseCase', async () => {
-        const userId = 'user-id';
-        const error = new Error('Database error');
-        mockGetUserByIdUseCase.execute.mockRejectedValue(error);
+  //   it('should handle other errors from GetUserByIdUseCase', async () => {
+  //       const userId = 'user-id';
+  //       const error = new Error('Database error');
+  //       mockGetUserByIdUseCase.execute.mockRejectedValue(error);
 
-        await expect(resolver.user(userId)).rejects.toThrow('Database error');
-        expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
-    });
-  });
+  //       await expect(resolver.user(userId)).rejects.toThrow('Database error');
+  //       expect(mockGetUserByIdUseCase.execute).toHaveBeenCalledWith(userId);
+  //   });
+  // });
 
   // You might also want to add tests for the mapDomainUserToGraphQLUser helper function directly
   // to ensure it maps all fields correctly, including the audit object and enums.

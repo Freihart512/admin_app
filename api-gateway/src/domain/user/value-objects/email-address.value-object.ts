@@ -1,8 +1,8 @@
 // domain/value-objects/EmailAddress.ts
-import { InvalidEmailAddress, InvalidEmailReasons } from '../errors/invalid-email-address.error';
+import { InvalidEmailAddressError, InvalidEmailReasons } from '../errors';
 import { ValueObject } from '../../@shared/value-objects/base.value-object';
 
-export class EmailAddress extends ValueObject<string> {
+export class EmailAddress extends ValueObject<string, undefined> {
   private static readonly EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   public static create(email: string): EmailAddress {
@@ -11,11 +11,11 @@ export class EmailAddress extends ValueObject<string> {
 
   protected ensureIsValid(value: string): void {
     if (!value || !EmailAddress.EMAIL_REGEX.test(value)) {
-      throw new InvalidEmailAddress(value, InvalidEmailReasons.InvalidFormat);
+      throw new InvalidEmailAddressError(value, InvalidEmailReasons.InvalidFormat);
     }
 
     if (value.length > 254) {
-      throw new InvalidEmailAddress(value, InvalidEmailReasons.TooLong);
+      throw new InvalidEmailAddressError(value, InvalidEmailReasons.TooLong);
     }
   }
 }

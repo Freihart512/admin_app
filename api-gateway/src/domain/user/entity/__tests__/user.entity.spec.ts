@@ -1,426 +1,465 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { User } from '../user.entity';
-import { BusinessRole, AccountStatus, AuditFields } from '../../../../@shared/core/types';
-import { UserSummary } from '../../value-objects/user-summary.value-object';
+import { BusinessRole, AccountStatus } from '../../user.types';
+import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
+import { EmailAddress } from '../../value-objects/email-address.value-object';
+import { PhoneNumber } from '../../value-objects/phone-number.value-object';
+import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
+import { Password } from '../../value-objects/password.value-object';
+import { AdminCannotHaveBusinessRolesError, NonAdminMustHaveRolesError, RoleUserCannotBeAdminError, FieldRequiredForRoleError, AddressRequiredForOwnerError } from '../../errors';
+import { UUIDValidator } from '../../../@shared/ports/uuid.validator.port';
+import { RFCValidator } from '../../../@shared/ports/rfc.validator.port';
+import { HashingService } from '../../../@shared/ports/hashing.service.port';
+import { UserSummaryType } from '@domain/user/user.types';
 
-describe('User Domain Entity', () => {
-  let userProps: any;
-  let mockCurrentUserSummary: UserSummary;
-  let initialAudit: AuditFields;
+describe('User Class Tests', () => {
+  //  Mock validators and hashing service for VO instantiation in tests
+  const mockUuidValidator: UUIDValidator = { validate: vi.fn().mockReturnValue(true) };
+  const mockRfcValidator: RFCValidator = { validate: vi.fn().mockReturnValue(true) };
+  const mockHashingService: HashingService = {
+    hash: vi.fn().mockResolvedValue('hashedPass'),
+    compare: vi.fn().mockResolvedValue(true),
+  };
 
-  beforeEach(() => {
-    mockCurrentUserSummary = new UserSummary({
-      id: 'current-user-id',
-      name: 'Current',
+  // Mock UserSummary for audit fields
+  const mockUserSummary: UserSummaryType = {
+    id: 'updater-user-id',
+    email: 'updater@example.com',
+  };
+  it('should throw AdminCannotHaveBusinessRolesError if an admin tries to have business roles', async () => {
+    const userProps = {
+      id: UUID.create('123', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: true,
+      roles: [BusinessRole.OWNER],
+      name: 'John',
+      lastName: 'Doe',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: '123 Street, City, Country',
+      rfc: RFC.create('MHTR93041179A', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+    };
+
+    expect(() => { new User(userProps) }).toThrowError(AdminCannotHaveBusinessRolesError);
+  });
+
+
+
+  it('should create a valid User object with required properties', async () => {
+    const userProps = {
+      id: UUID.create('valid-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.OWNER, BusinessRole.TENANT],
+      name: 'John',
+      lastName: 'Doe',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: '123 Street, City, Country', // Owner requires address
+      rfc: RFC.create('MHTR93041179A', mockRfcValidator), // Owner requires RFC
+      status: AccountStatus.ACTIVE,
+    };
+
+    const user = new User(userProps);
+
+    expect(user.getId()).toBeDefined();
+    expect(user.getEmail().getValue()).toBe('test@example.com');
+    expect(user.getRoles()).toEqual([BusinessRole.OWNER, BusinessRole.TENANT]);
+    expect(user.getName()).toBe('John');
+    expect(user.getStatus()).toBe(AccountStatus.ACTIVE);
+  });
+
+
+  it('should throw AdminCannotHaveBusinessRolesError if admin is created with business roles', async () => {
+    const userProps = {
+      id: UUID.create('admin-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: true,
+      roles: [BusinessRole.OWNER],
+      name: 'John',
+      lastName: 'Doe',
+      status: AccountStatus.ACTIVE
+    };
+
+    expect(() => { new User(userProps) }).toThrowError(new AdminCannotHaveBusinessRolesError());
+  });
+
+
+  it('should throw NonAdminMustHaveRolesError if non-admin user is created with no roles', async () => {
+    const userProps = {
+      id: UUID.create('user-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [], // Non-admin must have roles
+      name: 'John',
+      lastName: 'Doe',
+      // No need for optional fields here as the error is for missing roles
+      status: AccountStatus.ACTIVE,
+    };
+
+    expect(() => {
+      new User({
+        ...userProps,
+        email: EmailAddress.create('test@example.com'),
+        password: Password.fromHash(userProps.password),
+      });
+    }).toThrowError(NonAdminMustHaveRolesError);
+  });
+
+  it('should throw RoleUserCannotBeAdminError when trying to update roles of an admin user', async () => {
+    const adminUser = new User({
+      id: UUID.create('admin-id', mockUuidValidator),
+      email: EmailAddress.create('admin@example.com'), // Use EmailAddress.create
+      password: Password.fromHash('hashedpassword'),
+      isAdmin: true,
+      roles: [], // Admins have no business roles
+      name: 'Admin',
       lastName: 'User',
-      email: 'current@example.com',
       status: AccountStatus.ACTIVE,
     });
 
-    initialAudit = {
-      createdAt: new Date(),
-      createdBy: mockCurrentUserSummary,
-      updatedAt: null,
-      updatedBy: null,
-      deletedAt: null,
-      deletedBy: null,
+    expect(() => {
+      adminUser.updateRoles([BusinessRole.OWNER]);
+      // Pass a mock UserSummary for the audit fields
+    }, mockUserSummary).toThrowError(RoleUserCannotBeAdminError);
+  });
+
+
+  it('should correctly update roles without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'John',
+      lastName: 'Doe',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: '123 Street, City, Country', // Required for existing OWNER role
+      rfc: RFC.create('MHTR93041179A', mockRfcValidator), // Required for existing OWNER role
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'system',
+        updatedBy: 'system',
+      },
     };
 
-    userProps = {
-      email: 'test@example.com',
-      passwordHash: 'hashedpassword',
-      name: 'Test',
+    const user = new User(userProps);
+    const updatedUser = user.updateRoles([BusinessRole.OWNER], mockUserSummary); // Pass mockUserSummary
+
+    expect(updatedUser.getRoles()).toEqual([BusinessRole.OWNER]);
+    expect(updatedUser.getEmail()).toEqual(user.getEmail()); // Ensures email is unchanged
+    expect(updatedUser.getName()).toBe(user.getName()); // Ensures name is unchanged
+    expect(updatedUser).not.toBe(user); // Ensures a new instance is returned
+  });
+
+
+  it('should throw FieldRequiredForRoleError if RFC is missing for OWNER role on creation', async () => {
+    const userPropsBase = {
+      id: UUID.create('rfc-missing-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.OWNER],
+      name: 'John',
+      lastName: 'Doe',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: '123 Street, City, Country',
+      rfc: undefined, // Missing RFC
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'system',
+        updatedBy: 'system',
+      }
+    };
+    const userProps = {
+      ...userPropsBase,
+      address: '123 Street, City, Country', // Address is also required for Owner
+      phoneNumber: PhoneNumber.create('1234567890'), // Phone Number is also required for Owner
+    };
+
+    expect(() => {
+      new User({
+        ...userProps,
+        email: EmailAddress.create('test@example.com'),
+        password: Password.fromHash(userProps.password),
+      });
+    }).toThrowError(FieldRequiredForRoleError); // RFC is required for OWNER role
+  });
+
+
+  it('should throw FieldRequiredForRoleError if phone number is missing for ACCOUNTANT role on creation', async () => {
+    const userProps = {
+      id: UUID.create('phone-missing-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.ACCOUNTANT],
+      name: 'John',
+      lastName: 'Doe',
+      address: '123 Street, City, Country',
+      rfc: RFC.create('MHTR93041179A', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+    };
+
+    expect(() => { new User(userProps) }).toThrowError(new FieldRequiredForRoleError('phone number', BusinessRole.ACCOUNTANT));
+  });
+
+
+  it('should throw AddressRequiredForOwnerError if address is missing for OWNER role on creation', async () => {
+    const userPropsBase = {
+      id: UUID.create('address-missing-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.OWNER],
+      name: 'John',
+      lastName: 'Doe',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      rfc: RFC.create('MHTR93041179A', mockRfcValidator), // RFC is also required for Owner
+      status: AccountStatus.ACTIVE,
+    };
+    expect(() => {
+      new User(userPropsBase)
+    }).toThrowError(AddressRequiredForOwnerError);
+  })
+
+  it('should return true for getIsAdmin() if the user is an admin', () => {
+    const adminUser = new User({
+      id: UUID.create('admin-check-id', mockUuidValidator),
+      email: EmailAddress.create('admin@example.com'),
+      password: Password.fromHash('hashedpassword'),
+      isAdmin: true,
+      roles: [], // Admins have no business roles
+      name: 'Admin',
       lastName: 'User',
-      audit: initialAudit,
+      status: AccountStatus.ACTIVE,
+    });
+
+    expect(adminUser.getIsAdmin()).toBe(true);
+  });
+
+
+  it('should return false for getIsAdmin() if the user is not an admin', async () => {
+    const regularUser = new User({
+      id: UUID.create('regular-user-check-id', mockUuidValidator),
+      email: EmailAddress.create('user@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Regular',
+      lastName: 'User',
+      phoneNumber: PhoneNumber.create('1234567890'), // Tenant requires phone number
+      rfc: RFC.create('TENANT-RFC', mockRfcValidator), // Tenant requires RFC
+      status: AccountStatus.ACTIVE,
+    });
+
+    expect(regularUser.getIsAdmin()).toBe(false);
+  });
+
+  // --- New tests for update methods ---
+
+  it('should correctly update email without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-email-id', mockUuidValidator),
+      email: EmailAddress.create('old.email@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'Email',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      rfc: RFC.create('OLD-RFC', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
     };
+
+    const user = new User(userProps);
+    const newEmail = EmailAddress.create('new.email@example.com');
+    const updatedUser = user.updateEmail(newEmail, mockUserSummary);
+
+    expect(updatedUser.getEmail()).toEqual(newEmail);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getName()).toBe(user.getName());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser.getAudit().updatedAt.getTime()).toBeGreaterThanOrEqual(user.getAudit().updatedAt.getTime());
+    expect(updatedUser).not.toBe(user);
   });
 
-  describe('constructor', () => {
-    it('should create a user with default values', () => {
-      const user = new User(userProps);
-      expect(user.id).toBeDefined();
-      expect(user.email).toBe('test@example.com');
-      expect(user.passwordHash).toBe('hashedpassword');
-      expect(user.isAdmin).toBe(false);
-      expect(user.roles).toEqual([]);
-      expect(user.name).toBe('Test');
-      expect(user.lastName).toBe('User');
-      expect(user.phoneNumber).toBeNull();
-      expect(user.address).toBeNull();
-      expect(user.rfc).toBeNull();
-      expect(user.status).toBe(AccountStatus.ACTIVE);
-      expect(user.audit).toEqual(initialAudit);
-    });
+  it('should correctly update password without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-password-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('oldpassword', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'Password',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      rfc: RFC.create('RFC-UPDATE-PASS', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
+    };
 
-    it('should create a user with provided values', () => {
-      const customProps = {
-        ...userProps,
-        id: 'custom-id',
-        isAdmin: true,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '1234567890',
-        address: '123 Test St',
-        rfc: 'ABC123XYZ',
-        status: AccountStatus.INACTIVE,
-        audit: {
-          createdAt: new Date('2023-01-01'),
-          createdBy: new UserSummary({ id: 'admin-id', name: 'Admin', lastName: 'User', email: 'admin@example.com', status: AccountStatus.ACTIVE }),
-          updatedAt: new Date('2023-01-02'),
-          updatedBy: new UserSummary({ id: 'updater-id', name: 'Updater', lastName: 'User', email: 'updater@example.com', status: AccountStatus.ACTIVE }),
-          deletedAt: new Date('2023-01-03'),
-          deletedBy: new UserSummary({ id: 'deleter-id', name: 'Deleter', lastName: 'User', email: 'deleter@example.com', status: AccountStatus.INACTIVE }),
-        },
-      };
-      const user = new User(customProps);
+    const user = new User(userProps);
+    const newPassword = await Password.create('newpassword', mockHashingService);
+    const updatedUser = user.updatePassword(newPassword, mockUserSummary);
 
-      expect(user.id).toBe('custom-id');
-      expect(user.email).toBe('test@example.com');
-      expect(user.passwordHash).toBe('hashedpassword');
-      expect(user.isAdmin).toBe(true);
-      // Admin roles are cleared in the constructor
-      expect(user.roles).toEqual([]);
-      expect(user.name).toBe('Test');
-      expect(user.lastName).toBe('User');
-      expect(user.phoneNumber).toBe('1234567890');
-      expect(user.address).toBe('123 Test St');
-      expect(user.rfc).toBe('ABC123XYZ');
-      expect(user.status).toBe(AccountStatus.INACTIVE);
-      expect(user.audit).toEqual(customProps.audit);
-    });
-
-    it('should clear roles if isAdmin is true', () => {
-      const propsWithAdminAndRoles = {
-        ...userProps,
-        isAdmin: true,
-        roles: [BusinessRole.OWNER, BusinessRole.TENANT],
-      };
-      const user = new User(propsWithAdminAndRoles);
-      expect(user.isAdmin).toBe(true);
-      expect(user.roles).toEqual([]);
-    });
+    expect(updatedUser.getPassword()).toEqual(newPassword);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getEmail()).toEqual(user.getEmail());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser).not.toBe(user);
   });
 
-  describe('validateRoleConsistency', () => {
-    it('should not throw error for non-admin users without roles', () => {
-      const user = new User(userProps);
-      expect(() => user.validateRoleConsistency()).not.toThrow();
-    });
+  it('should correctly update phone number without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-phone-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'Phone',
+      phoneNumber: PhoneNumber.create('1112223333'),
+      rfc: RFC.create('RFC-UPDATE-PHONE', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
+    };
 
-    it('should not throw error for non-admin users with valid roles and fields', () => {
-      const ownerProps = {
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '123',
-        address: 'xyz',
-        rfc: 'abc',
-      };
-      const user = new User(ownerProps);
-      expect(() => user.validateRoleConsistency()).not.toThrow();
+    const user = new User(userProps);
+    const newPhoneNumber = PhoneNumber.create('9998887777');
+    const updatedUser = user.updatePhoneNumber(newPhoneNumber, mockUserSummary);
 
-      const tenantProps = {
-        ...userProps,
-        roles: [BusinessRole.TENANT],
-        phoneNumber: '123',
-        rfc: 'abc',
-      };
-      const tenantUser = new User(tenantProps);
-      expect(() => tenantUser.validateRoleConsistency()).not.toThrow();
-
-      const accountantProps = {
-        ...userProps,
-        roles: [BusinessRole.ACCOUNTANT],
-      };
-      const accountantUser = new User(accountantProps);
-      expect(() => accountantUser.validateRoleConsistency()).not.toThrow();
-    });
-
-    it('should throw error if Admin has business roles', () => {
-      const adminWithRolesProps = {
-        ...userProps,
-        isAdmin: true,
-        roles: [BusinessRole.OWNER], // Roles should be cleared by constructor, but testing explicitly
-      };
-      // Constructor clears roles, so validateRoleConsistency shouldn't throw here
-      const user = new User(adminWithRolesProps);
-      expect(() => user.validateRoleConsistency()).not.toThrow();
-
-      // Simulate adding a role after creation (though updateRoles handles this)
-      user.roles = [BusinessRole.TENANT];
-      expect(() => user.validateRoleConsistency()).toThrow('Admin users cannot have business roles');
-    });
-
-    it('should throw error if Owner is missing phone number', () => {
-      const ownerMissingPhoneProps = {
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        address: 'xyz',
-        rfc: 'abc',
-      };
-      const user = new User(ownerMissingPhoneProps);
-      expect(() => user.validateRoleConsistency()).toThrow('Phone number is required for Owner or Tenant.');
-    });
-
-    it('should throw error if Owner is missing address', () => {
-      const ownerMissingAddressProps = {
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '123',
-        rfc: 'abc',
-      };
-      const user = new User(ownerMissingAddressProps);
-      expect(() => user.validateRoleConsistency()).toThrow('Address is required for Owner.');
-    });
-
-    it('should throw error if Owner is missing rfc', () => {
-      const ownerMissingRfcProps = {
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '123',
-        address: 'xyz',
-      };
-      const user = new User(ownerMissingRfcProps);
-      expect(() => user.validateRoleConsistency()).toThrow('RFC is required for Owner or Tenant.');
-    });
-
-    it('should throw error if Tenant is missing phone number', () => {
-      const tenantMissingPhoneProps = {
-        ...userProps,
-        roles: [BusinessRole.TENANT],
-        rfc: 'abc',
-      };
-      const user = new User(tenantMissingPhoneProps);
-      expect(() => user.validateRoleConsistency()).toThrow('Phone number is required for Owner or Tenant.');
-    });
-
-    it('should throw error if Tenant is missing rfc', () => {
-      const tenantMissingRfcProps = {
-        ...userProps,
-        roles: [BusinessRole.TENANT],
-        phoneNumber: '123',
-      };
-      const user = new User(tenantMissingRfcProps);
-      expect(() => user.validateRoleConsistency()).toThrow('RFC is required for Owner or Tenant.');
-    });
+    expect(updatedUser.getPhoneNumber()).toEqual(newPhoneNumber);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getName()).toBe(user.getName());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser).not.toBe(user);
   });
 
-  describe('validateRoles', () => {
-    it('should clear roles if user is admin', () => {
-      const adminUser = new User({ ...userProps, isAdmin: true, roles: [BusinessRole.OWNER] });
-      // Constructor calls validateRoles, so roles should be empty
-      expect(adminUser.roles).toEqual([]);
+  it('should correctly update address without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-address-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'Address',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: 'Old Address',
+      rfc: RFC.create('RFC-UPDATE-ADDRESS', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
+    };
 
-      // Test calling validateRoles again
-      adminUser.roles = [BusinessRole.TENANT];
-      (adminUser as any).validateRoles(); // Access private method for testing
-      expect(adminUser.roles).toEqual([]);
-    });
+    const user = new User(userProps);
+    const newAddress = 'New Address';
+    const updatedUser = user.updateAddress(newAddress, mockUserSummary);
 
-    it('should not clear roles if user is not admin', () => {
-      const regularUser = new User({ ...userProps, isAdmin: false, roles: [BusinessRole.OWNER] });
-      // Constructor calls validateRoles, roles should remain
-      expect(regularUser.roles).toEqual([BusinessRole.OWNER]);
-
-      // Test calling validateRoles again
-      regularUser.roles = [BusinessRole.TENANT];
-      (regularUser as any).validateRoles(); // Access private method for testing
-      expect(regularUser.roles).toEqual([BusinessRole.TENANT]);
-    });
+    expect(updatedUser.getAddress()).toBe(newAddress);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getName()).toBe(user.getName());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser).not.toBe(user);
   });
 
-  describe('hasRole', () => {
-    it('should return true if user has the specified role', () => {
-      const user = new User({ ...userProps, roles: [BusinessRole.OWNER, BusinessRole.ACCOUNTANT] });
-      expect(user.hasRole(BusinessRole.OWNER)).toBe(true);
-      expect(user.hasRole(BusinessRole.ACCOUNTANT)).toBe(true);
-    });
+  it('should correctly update RFC without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-rfc-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'RFC',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: 'Test Address',
+      rfc: RFC.create('OLD-RFC-VALUE', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
+    };
 
-    it('should return false if user does not have the specified role', () => {
-      const user = new User({ ...userProps, roles: [BusinessRole.OWNER] });
-      expect(user.hasRole(BusinessRole.TENANT)).toBe(false);
-    });
+    const user = new User(userProps);
+    const newRfc = RFC.create('NEW-RFC-VALUE', mockRfcValidator);
+    const updatedUser = user.updateRfc(newRfc, mockUserSummary);
 
-    it('should return false if user has no roles', () => {
-      const user = new User(userProps);
-      expect(user.hasRole(BusinessRole.OWNER)).toBe(false);
-    });
+    expect(updatedUser.getRfc()).toEqual(newRfc);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getName()).toBe(user.getName());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser).not.toBe(user);
   });
 
-  describe('isActive', () => {
-    it('should return true if status is active', () => {
-      const user = new User({ ...userProps, status: AccountStatus.ACTIVE });
-      expect(user.isActive()).toBe(true);
-    });
+  it('should correctly update status without modifying other properties and return a new instance', async () => {
+    const userProps = {
+      id: UUID.create('update-status-id', mockUuidValidator),
+      email: EmailAddress.create('test@example.com'),
+      password: await Password.create('leq,O24@#yZ1!', mockHashingService),
+      isAdmin: false,
+      roles: [BusinessRole.TENANT],
+      name: 'Update',
+      lastName: 'Status',
+      phoneNumber: PhoneNumber.create('1234567890'),
+      address: 'Test Address',
+      rfc: RFC.create('RFC-UPDATE-STATUS', mockRfcValidator),
+      status: AccountStatus.ACTIVE,
+      audit: {
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: 'creator',
+        updatedBy: 'creator',
+      },
+    };
 
-    it('should return false if status is inactive', () => {
-      const user = new User({ ...userProps, status: AccountStatus.INACTIVE });
-      expect(user.isActive()).toBe(false);
-    });
-  });
+    const user = new User(userProps);
+    const newStatus = AccountStatus.INACTIVE;
+    const updatedUser = user.updateStatus(newStatus, mockUserSummary);
 
-  describe('markAsDeleted', () => {
-    it('should set deletedAt, status to inactive, updatedAt, and updatedBy', () => {
-      const user = new User(userProps);
-      const initialUpdatedAt = user.audit.updatedAt;
-      const initialUpdatedBy = user.audit.updatedBy;
-
-      vi.useFakeTimers();
-      const mockNow = new Date(2024, 0, 20, 10, 0, 0);
-      vi.setSystemTime(mockNow);
-
-      user.markAsDeleted(mockCurrentUserSummary);
-
-      expect(user.audit.deletedAt).toEqual(mockNow);
-      expect(user.status).toBe(AccountStatus.INACTIVE);
-      expect(user.audit.updatedAt).toEqual(mockNow);
-      expect(user.audit.updatedBy).toBe(mockCurrentUserSummary);
-
-      vi.useRealTimers();
-    });
-
-    it('should not modify deleted user if already marked as deleted', () => {
-      const deletedUserProps = {
-        ...userProps,
-        status: AccountStatus.INACTIVE,
-        audit: {
-          ...initialAudit,
-          deletedAt: new Date('2023-10-01'),
-          deletedBy: new UserSummary({ id: 'deleter-id', name: 'Deleter', lastName: 'User', email: 'deleter@example.com', status: AccountStatus.ACTIVE }),
-        },
-      };
-      const user = new User(deletedUserProps);
-      const initialDeletedAt = user.audit.deletedAt;
-      const initialDeletedBy = user.audit.deletedBy;
-      const initialStatus = user.status;
-
-      vi.useFakeTimers();
-      const mockNow = new Date(2024, 0, 20, 10, 0, 0);
-      vi.setSystemTime(mockNow);
-
-      user.markAsDeleted(mockCurrentUserSummary);
-
-      expect(user.audit.deletedAt).toEqual(initialDeletedAt);
-      expect(user.status).toBe(initialStatus);
-      // Updated fields should also not change if already deleted
-      expect(user.audit.updatedAt).toBe(deletedUserProps.audit.updatedAt);
-      expect(user.audit.updatedBy).toBe(deletedUserProps.audit.updatedBy);
-      expect(user.audit.deletedBy).toBe(initialDeletedBy);
-
-
-      vi.useRealTimers();
-    });
-  });
-
-  describe('updateRoles', () => {
-    it('should update roles for non-admin users', () => {
-      const user = new User(userProps);
-      const newRoles = [BusinessRole.OWNER, BusinessRole.ACCOUNTANT];
-      user.updateRoles(newRoles);
-      expect(user.roles).toEqual(expect.arrayContaining(newRoles));
-      expect(user.roles.length).toBe(newRoles.length);
-    });
-
-    it('should remove duplicate roles', () => {
-      const user = new User(userProps);
-      const newRoles = [BusinessRole.OWNER, BusinessRole.OWNER, BusinessRole.TENANT];
-      user.updateRoles(newRoles);
-      expect(user.roles).toEqual(expect.arrayContaining([BusinessRole.OWNER, BusinessRole.TENANT]));
-      expect(user.roles.length).toBe(2);
-    });
-
-    it('should clear roles if user becomes admin', () => {
-      const user = new User({ ...userProps, roles: [BusinessRole.OWNER] });
-      user.isAdmin = true; // Simulate becoming admin
-      user.updateRoles([BusinessRole.TENANT]); // Try to add roles as admin
-      expect(user.roles).toEqual([]);
-    });
-
-    it('should filter out invalid roles', () => {
-        const user = new User(userProps);
-        const newRoles = [BusinessRole.OWNER, 'INVALID_ROLE' as BusinessRole, BusinessRole.TENANT];
-        user.updateRoles(newRoles);
-        expect(user.roles).toEqual(expect.arrayContaining([BusinessRole.OWNER, BusinessRole.TENANT]));
-        expect(user.roles.length).toBe(2);
-    });
-  });
-
-  describe('validateRequiredFields', () => {
-    it('should not throw error for admin users', () => {
-      const adminUser = new User({ ...userProps, isAdmin: true });
-      expect(() => adminUser.validateRequiredFields()).not.toThrow();
-    });
-
-    it('should not throw error for non-admin users without specific roles', () => {
-      const regularUser = new User(userProps);
-      expect(() => regularUser.validateRequiredFields()).not.toThrow();
-    });
-
-    it('should not throw error for Owner with required fields', () => {
-      const ownerUser = new User({
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '123',
-        address: 'xyz',
-        rfc: 'abc',
-      });
-      expect(() => ownerUser.validateRequiredFields()).not.toThrow();
-    });
-
-    it('should throw error for Owner missing phone number', () => {
-      const ownerMissingPhone = new User({
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        address: 'xyz',
-        rfc: 'abc',
-      });
-      expect(() => ownerMissingPhone.validateRequiredFields()).toThrow('Phone number is required for Owner or Tenant.');
-    });
-
-    it('should throw error for Owner missing address', () => {
-      const ownerMissingAddress = new User({
-        ...userProps,
-        roles: [BusinessRole.OWNER],
-        phoneNumber: '123',
-        rfc: 'abc',
-      });
-      expect(() => ownerMissingAddress.validateRequiredFields()).toThrow('Address is required for Owner.');
-    });
-
-    it('should throw error for Owner missing rfc', () => {
-        const ownerMissingRfc = new User({
-            ...userProps,
-            roles: [BusinessRole.OWNER],
-            phoneNumber: '123',
-            address: 'xyz',
-        });
-        expect(() => ownerMissingRfc.validateRequiredFields()).toThrow('RFC is required for Owner.');
-    });
-
-    it('should not throw error for Tenant with required fields', () => {
-      const tenantUser = new User({
-        ...userProps,
-        roles: [BusinessRole.TENANT],
-        phoneNumber: '123',
-        rfc: 'abc',
-      });
-      expect(() => tenantUser.validateRequiredFields()).not.toThrow();
-    });
-
-    it('should throw error for Tenant missing phone number', () => {
-      const tenantMissingPhone = new User({
-        ...userProps,
-        roles: [BusinessRole.TENANT],
-        rfc: 'abc',
-      });
-      expect(() => tenantMissingPhone.validateRequiredFields()).toThrow('Phone number is required for Owner or Tenant.');
-    });
-
-    it('should throw error for Tenant missing rfc', () => {
-        const tenantMissingRfc = new User({
-            ...userProps,
-            roles: [BusinessRole.TENANT],
-            phoneNumber: '123',
-        });
-        expect(() => tenantMissingRfc.validateRequiredFields()).toThrow('RFC is required for Tenant.');
-    });
+    expect(updatedUser.getStatus()).toBe(newStatus);
+    expect(updatedUser.getId()).toBe(user.getId());
+    expect(updatedUser.getName()).toBe(user.getName());
+    expect(updatedUser.getAudit().updatedBy).toBe(mockUserSummary.id);
+    expect(updatedUser.getAudit().updatedAt).toBeInstanceOf(Date);
+    expect(updatedUser).not.toBe(user);
   });
 });
+

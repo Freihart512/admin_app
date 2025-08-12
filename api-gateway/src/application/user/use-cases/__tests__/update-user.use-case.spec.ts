@@ -3,7 +3,7 @@ import { UpdateUserUseCase } from '../update-user.use-case';
 import { UserRepository } from '../../../../domain/user/ports/user.repository.port';
 import { User } from '../../../../domain/user/entity/user.entity';
 import { UserSummary } from '../../../../domain/user/value-objects/user-summary.value-object';
-import { UpdateUserDto } from '../../dtos/user.dtos';
+import { UpdateUserDto } from '../../dtos/user.dto';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { RFC } from '../../../../domain/@shared/value-objects/rfc.value-object';
 import { AccountStatus, BusinessRole } from '../../../../@shared/core/types';

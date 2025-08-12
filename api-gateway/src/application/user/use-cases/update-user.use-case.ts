@@ -1,5 +1,5 @@
 import { UserRepository } from '../../../domain/user/ports/user.repository.port';
-import { UpdateUserDto } from '../dtos/user.dtos'; // Assuming this path is correct
+import { UpdateUserDto } from '../dtos/user.dto'; // Assuming this path is correct
 import { User } from '../../../domain/user/entity/user.entity';
 import { ConflictException, NotFoundException } from '@nestjs/common'; // Using NestJS exceptions for example
 import { AuditFields } from '../../../@shared/core/types';

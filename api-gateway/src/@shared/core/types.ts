@@ -1,21 +1,26 @@
-import { UserSummary } from '../../domain/user/value-objects/user-summary.value-object';
+import { UserSummaryType } from '@domain/user/user.types'
 
-export enum BusinessRole {
-  OWNER = 'OWNER',
-  TENANT = 'TENANT',
-  ACCOUNTANT = 'ACCOUNTANT',
-}
-
-export enum AccountStatus {
-  ACTIVE = 'active', // Keep as string literals for consistency with domain
-  INACTIVE = 'inactive',
-}
-
-export interface AuditFields {
+ export interface AuditFields {
   createdAt: Date | null;
-  createdBy: UserSummary | null;
+  createdBy: UserSummaryType | null;
   updatedAt: Date | null;
-  updatedBy: UserSummary | null;
+  updatedBy: UserSummaryType | null;
   deletedAt: Date | null;
-  deletedBy: UserSummary | null;
+  deletedBy: UserSummaryType | null;
+}
+
+export type PaginationOptions = {
+  limit: number;
+  offset: number;
+};
+
+export type PaginatedResult<T> = {
+  elements: T[];
+  totalCount: number;
+  hasNextPage: boolean;
+};
+
+export type FindPaginatedParams<T> = {
+  filters:T;
+  paginationOptions: PaginationOptions;
 }

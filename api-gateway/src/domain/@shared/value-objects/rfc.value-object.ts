@@ -3,15 +3,12 @@ import { ValueObject } from './base.value-object';
 import { InvalidRFCError, RFCValidationReason } from '../errors/invalid-rfc.error';
 import { RFCValidator } from '../ports/rfc.validator.port';
 
-export class RFC extends ValueObject<string> {
-  private readonly validator: RFCValidator;
-
+export class RFC extends ValueObject<string, RFCValidator> {
   private constructor(value: string, validator: RFCValidator) {
-    super(value);
-    this.validator = validator;
+    super(value, validator);
   }
 
-  public static create(raw: string, validator: RFCValidator): RFC {
+  public static create(raw: string | undefined, validator: RFCValidator): RFC {
     if (!raw) {
       throw new InvalidRFCError('', RFCValidationReason.Empty);
     }
@@ -20,10 +17,11 @@ export class RFC extends ValueObject<string> {
     return new RFC(upper, validator);
   }
 
-  protected ensureIsValid(value: string): void {
+  protected ensureIsValid(value: string, validator: RFCValidator): void {
     try {
-      this.validator.validate(value);
-    } catch {
+      validator.validate(value);
+    } catch(error) {
+      console.error(error)
       throw new InvalidRFCError(value, RFCValidationReason.InvalidFormat);
     }
   }

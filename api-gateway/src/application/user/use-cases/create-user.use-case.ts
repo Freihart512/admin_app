@@ -1,71 +1,174 @@
-import { User } from '../../../domain/user/entity/user.entity';
-import { UserRepository } from '../../../domain/user/ports/user.repository.port';
-import { CreateUserDto } from '../dtos/user.dtos';
-import { v4 as uuidv4 } from 'uuid'; // Import UUID library for generating IDs
-import { AccountStatus, BusinessRole } from '../../../@shared/core/types';
-import { UserSummary } from '../../../domain/user/value-objects/user-summary.value-object'; // Import UserSummary
+// import { User } from '../../../domain/user/entity/user.entity';
+// import { UserRepository } from '../../../domain/user/ports/user.repository.port';
+// import { CreateUserDto } from '../dtos/user.dto';
+// import { AccountStatus } from '@domain/user/user.types';
+// import { EmailAddress } from '../../../domain/user/value-objects/email-address.value-object';
+// import { Password } from '../../../domain/user/value-objects/password.value-object';
+// import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
+// import { ServiceUnavailableError } from '@shared/errors/service-unavailable.error';
+// import { generateRandomPassword } from '@shared/utils/password-generator'
+// import { ValueObject } from '@domain/@shared/value-objects/base.value-object';
+// import { HashingService } from '@domain/@shared/ports/hashing.service.port';
+// import { RFCValidator } from '@domain/@shared/ports/rfc.validator.port';
+// import { UUIDValidator } from '@domain/@shared/ports/uuid.validator.port';
+// import { DataAccessError } from '@infrastructure/database/errors/data-access.error';
+// import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
+// import { PhoneNumber } from '@domain/user/value-objects';
+// import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
 
-import { EmailAddress } from '../../../domain/user/value-objects/email-address.value-object';
-import { RFC } from '../../../domain/@shared/value-objects/rfc.value-object';
-import { PhoneNumber } from '../../../domain/user/value-objects/phone-number.value-object';
-import { Password } from '../../../domain/user/value-objects/password.value-object'; // Import Password
+
+// export class CreateUserUseCase {
+//   constructor(private readonly userRepository: UserRepository) { }
+//   async execute(createUserDto: CreateUserDto, hashingService: HashingService, validateRfc: RFCValidator, validateUUID: UUIDValidator): Promise<User> {
+//     const emailAddress = EmailAddress.create(createUserDto.email);
+//     const password = await Password.create(generateRandomPassword(), hashingService);
+
+//     this.validateUniqueValue<EmailAddress>(emailAddress, this.userRepository.isEmailUnique, 'Email')
+
+//     const newUser = new User({
+//       id: UUID.create(createUserDto.id, validateUUID), // Assuming createUserDto.id is the raw string
+//       email: emailAddress,
+//       password: password,
+//       isAdmin: createUserDto.isAdmin,
+//       name: createUserDto.name,
+//       lastName: createUserDto.lastName,
+//       roles: createUserDto.roles,
+//       phoneNumber: createUserDto.phoneNumber ? PhoneNumber.create(createUserDto.phoneNumber) : undefined,
+//       address: createUserDto.address,
+//       status: AccountStatus.ACTIVE,
+//       rfc: createUserDto.rfc ? RFC.create(createUserDto.rfc, validateRfc) : undefined,
+//     });
+
+//     const promises: Promise<boolean>[] = [];
+//     const rfc = newUser.getRfc();
+//     const phoneNumber = newUser.getPhoneNumber();
+
+
+//     if (rfc) {
+//       promises.push(this.validateUniqueValue<RFC>(rfc, this.userRepository.isRfcUnique, 'RFC'));
+//     }
+
+//     if (phoneNumber) {
+//       promises.push(this.validateUniqueValue<PhoneNumber>(phoneNumber, this.userRepository.isPhoneNumberUnique, 'Phone Number'));
+//     }
+
+//     await Promise.all(promises);
+
+//     await this.userRepository.create(newUser);
+//     return newUser
+//   }
+
+//   private async validateUniqueValue<voType>(
+//     value: voType,
+//     checkFunction: (value: voType) => Promise<boolean>,
+//     fieldName: string
+//   ): Promise<boolean> {
+//     try {
+//       const isUnique = await checkFunction(value);
+//       if (!isUnique) {
+//         throw new AlreadyValueExistError((value as ValueObject<string, undefined>).getValue(), fieldName);
+//       }
+//       return true;
+//     } catch (error) {
+//       if (error instanceof AlreadyValueExistError) {
+//         throw error
+//       }
+//       console.error(error)
+//       if (error instanceof DataAccessError) {
+//         throw new ServiceUnavailableError('Imposible check unique values')
+//       }
+//       throw error
+//     }
+
+//   }
+// }
+
+import { User } from '@domain/user/entity/user.entity';
+import { UserRepository } from '@domain/user/ports/user.repository.port';
+import { CreateUserDto } from '../dtos/user.dto';
+import { AccountStatus } from '@domain/user/user.types';
+import { EmailAddress } from '@domain/user/value-objects/email-address.value-object';
+import { Password } from '@domain/user/value-objects/password.value-object';
+import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
+import { ServiceUnavailableError } from '@shared/errors/service-unavailable.error';
+import { ValueObject } from '@domain/@shared/value-objects/base.value-object';
+import { HashingService } from '@domain/@shared/ports/hashing.service.port';
+import { RFCValidator } from '@domain/@shared/ports/rfc.validator.port';
+import { UUIDValidator } from '@domain/@shared/ports/uuid.validator.port';
+import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
+import { PhoneNumber } from '@domain/user/value-objects';
+import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
+import { PasswordGenerator } from '@domain/@shared/ports/password-generator.port'; // nuevo puerto
+import { RepositoryUnavailableError } from '@domain/@shared/errors/repository-unavailable.error'; // error de capa dominio/app
 
 export class CreateUserUseCase {
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly hashingService: HashingService,
+    private readonly rfcValidator: RFCValidator,
+    private readonly uuidValidator: UUIDValidator,
+    private readonly passwordGenerator: PasswordGenerator, // en lugar de util suelto
+  ) {}
 
-  async execute(createUserDto: CreateUserDto, currentUser: UserSummary): Promise<User> {
-    // Apply business rules and validations
-    const emailAddress = EmailAddress.create(createUserDto.email);
-    const existingUser = await this.userRepository.findByEmail(emailAddress.getValue());
-    if (existingUser) {
-      throw new Error('User with this email already exists');
-    }
+  async execute(dto: CreateUserDto): Promise<User> {
+    const email = EmailAddress.create(dto.email);
+    const rawPassword = this.passwordGenerator.generate(); // política de password por puerto
+    const password = await Password.create(rawPassword, this.hashingService);
 
-    // Basic validation for admin exclusivity
-    if (createUserDto.isAdmin && createUserDto.roles && createUserDto.roles.length > 0) {
-      throw new Error('Admin users cannot have business roles');
-    }
+    const user = new User({
+      id: UUID.create(dto.id, this.uuidValidator),
+      email,
+      password,
+      isAdmin: dto.isAdmin,
+      name: dto.name,
+      lastName: dto.lastName,
+      roles: dto.roles,
+      phoneNumber: dto.phoneNumber ? PhoneNumber.create(dto.phoneNumber) : undefined,
+      address: dto.address,
+      status: AccountStatus.ACTIVE,
+      rfc: dto.rfc ? RFC.create(dto.rfc, this.rfcValidator) : undefined,
+    });
 
-    // Basic validation for required fields based on roles
-    if (createUserDto.roles.includes(BusinessRole.OWNER) || createUserDto.roles.includes(BusinessRole.TENANT)) {
-      if (!createUserDto.phoneNumber) {
-        throw new Error('Phone number is required for Owner and Tenant roles');
+    // Pre-checks best-effort (opcional). O confía solo en constraints.
+    await Promise.all([
+      this.validateUniqueValue(email, (v) => this.userRepository.isEmailUnique(v), 'email'),
+      user.getRfc()
+        ? this.validateUniqueValue(user.getRfc()!, (v) => this.userRepository.isRfcUnique(v), 'rfc')
+        : Promise.resolve(true),
+      user.getPhoneNumber()
+        ? this.validateUniqueValue(user.getPhoneNumber()!, (v) => this.userRepository.isPhoneNumberUnique(v), 'phoneNumber')
+        : Promise.resolve(true),
+    ]);
+
+    try {
+      await this.userRepository.create(user);
+    } catch (err) {
+      // El adapter del repo debe mapear 23505 → AlreadyValueExistError(field, value)
+      if (err instanceof AlreadyValueExistError) throw err;
+      if (err instanceof RepositoryUnavailableError) {
+        throw new ServiceUnavailableError('No fue posible crear el usuario en este momento.');
       }
-      if (!createUserDto.rfc) {
-        throw new Error('RFC is required for Owner and Tenant roles');
-      }
+      throw err;
     }
-    if (createUserDto.roles.includes(BusinessRole.OWNER) && !createUserDto.isAdmin) {
-      if (!createUserDto.address) {
-        throw new Error('Address is required for Owner role');
+
+    return user;
+  }
+
+  private async validateUniqueValue<VO extends ValueObject<string, any>>(
+    value: VO,
+    check: (value: VO) => Promise<boolean>,
+    fieldName: string
+  ): Promise<true> {
+    try {
+      const isUnique = await check(value);
+      if (!isUnique) {
+        throw new AlreadyValueExistError(value.getValue(), fieldName);
       }
+      return true as const;
+    } catch (error) {
+      if (error instanceof AlreadyValueExistError) throw error;
+      // No dependas de infraestructura aquí
+      throw new ServiceUnavailableError(`No se pudo verificar unicidad para ${fieldName}.`);
     }
-    
-    const password = await Password.create(createUserDto.password); // Create Password VO and hash    
-
-    const newUser = new User({
-      id: uuidv4(), // Generate a unique ID
-      email: emailAddress.getValue(), // Pass the string value of EmailAddress
-      passwordHash: password.getHashedValue(), // Pass the hashed string value from Password VO
-      isAdmin: createUserDto.isAdmin ?? false,
-      name: createUserDto.name,
- lastName: createUserDto.lastName,
-      roles: createUserDto.roles ?? [],
-      phoneNumber: createUserDto.phoneNumber ? new PhoneNumber(createUserDto.phoneNumber) : undefined, // Pass the string value or null
-      address: createUserDto.address ?? null,
-      status: AccountStatus.ACTIVE, // Assuming new users are active by default
-      audit: {
-        createdAt: new Date(),
-        createdBy: currentUser, // Pass the UserSummary instance
-        updatedAt: null, // Initialize audit fields
-        updatedBy: null,
-        deletedAt: null,
-        deletedBy: null,
-      },
-      rfc: createUserDto.rfc ? new RFC(createUserDto.rfc) : undefined, // Pass the string value or null
-    );
-
-    await this.userRepository.save(newUser);
-    return newUser
   }
 }

@@ -1,0 +1,8 @@
+export { RepositoryError } from './repository.error';
+export { RepositoryUnavailableError } from './repository-unavailable.error';
+export { RepositoryTimeoutError } from './repository-timeout.error';
+export { UniqueViolationError } from './unique-violation.error';
+export { NotNullViolationError } from './not-null-violation.error';
+export { ForeignKeyViolationError } from './foreign-key-violation.error';
+export { ConcurrencyConflictError } from './concurrency-conflict.error';
+export { ServiceUnavailableError } from './service-unavailable.error';
