@@ -1,4 +1,4 @@
-import { generateRandomPassword } from '../password-generator';
+import { generateRandomPassword } from '../password-generator.service';
 
 describe('generateRandomPassword', () => {
   it('should generate a password of at least 8 characters', () => {

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ValidateUUID } from '../uuid.validator';
+import { UuidValidator } from '../uuid.validator';
 import * as uuidLib from 'uuid';
 
 vi.mock('uuid');
 
-describe('ValidateUUID', () => {
-  const validator = new ValidateUUID();
+describe('UuidValidator', () => {
+  const validator = new UuidValidator();
 
   it('should return true for a valid UUID', () => {
     vi.spyOn(uuidLib, 'validate').mockReturnValue(true);

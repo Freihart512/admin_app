@@ -20,11 +20,7 @@ describe('RepositoryTimeoutError', () => {
 
   it('should use the default message when no message is provided', () => {
     const error = new RepositoryTimeoutError();
-    // Assuming RepositoryError has a default message or this class overrides it
-    // Based on the original code, RepositoryError didn't have a constructor,
-    // so the message would be inherited from Error or explicitly set here.
-    // Let's assume a default message is intended or inherited.
-    expect(error.message).toBe(''); // Default message from base Error or empty if not set
+    expect(error.message).toBe('Repository operation timed out.');
   });
 
   it('should use a custom message when provided', () => {

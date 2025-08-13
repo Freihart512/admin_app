@@ -24,3 +24,14 @@ export type FindPaginatedParams<T> = {
   filters:T;
   paginationOptions: PaginationOptions;
 }
+
+export const AppErrorCodes = {
+  ALREADY_EXISTS: 'ALREADY_EXISTS',
+  CONFLICT: 'CONFLICT',
+  TIMEOUT: 'TIMEOUT',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+  VALIDATION: 'VALIDATION',
+  UNKNOWN: 'UNKNOWN',
+} as const;
+
+export type AppErrorCode = (typeof AppErrorCodes)[keyof typeof AppErrorCodes];

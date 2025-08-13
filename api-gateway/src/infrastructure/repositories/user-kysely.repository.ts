@@ -1,76 +1,57 @@
-
-// infrastructure/repositories/KyselyUserRepository.ts
+// src/infrastructure/repositories/kysely-user.repository.ts
 import { Kysely, OperandValueExpressionOrList } from 'kysely';
 import { Database, db } from '../database/kysely.db';
-import { UserRepository } from '../../domain/user/ports/user.repository.port';
-import { User } from '../../domain/user/entity/user.entity';
-import { PhoneNumber } from '../../domain/user/value-objects/phone-number.value-object';
-import { EmailAddress } from '../../domain/user/value-objects/email-address.value-object';
-import { RFC } from '../../domain/@shared/value-objects/rfc.value-object';
+import { UserRepository } from '@domain/user/ports/user.repository.port';
+import { User } from '@domain/user/entity/user.entity';
+import { PhoneNumber } from '@domain/user/value-objects/phone-number.value-object';
+import { EmailAddress } from '@domain/user/value-objects/email-address.value-object';
+import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
 import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
-import { DataAccessError } from '@infrastructure/database/errors/data-access.error';
-import { UserTable } from '@infrastructure/database/types';
+import { UsersTable, NewUser } from '@infrastructure/database/types';
 
+import { withDbErrorMapping } from '@infrastructure/database/error-mapper';
 
 export class KyselyUserRepository implements UserRepository {
-  /**
-   * The underlying database connection.  Defaults to the shared
-   * `db` instance exported from the database module.  Passing a
-   * different connection allows for easier testing.
-   */
   constructor(private readonly db: Kysely<Database> = db) {}
 
-  /**
-   * Convert a domain `User` entity into a plain object compatible
-   * with the `users` table defined in the database layer.  This
-   * method extracts the primitive values from each value object and
-   * serialises arrays into JSON strings where appropriate.
-   */
-  private toPersistence(user: User): UserTable {
-    return {
-      id: user.getId().getValue(),
-      email: user.getEmail().getValue(),
-      password_hash: user.getPassword().getHashedValue(),
-      is_admin: user.getIsAdmin(),
-      roles: JSON.stringify(user.getRoles()),
-      name: user.getName(),
-      last_name: user.getLastName(),
-      phone_number: user.getPhoneNumber() ? user.getPhoneNumber()!.getValue() : null,
-      address: user.getAddress() ?? null,
-      rfc: user.getRfc() ? user.getRfc()!.getValue() : null,
-      status: user.getStatus(),
-      // Audit fields are optional on creation; set sensible defaults
-      created_at: user.getAudit()?.createdAt ?? new Date(),
-      created_by: user.getAudit()?.createdBy?.id ?? 'system',
-      updated_at: user.getAudit()?.updatedAt ?? null,
-      updated_by: user.getAudit()?.updatedBy?.id ?? null,
-      deleted_at: user.getAudit()?.deletedAt ?? null,
-      deleted_by: user.getAudit()?.deletedBy?.id ?? null,
-    };
-  }
+ private toPersistence(user: User): NewUser {
+  return {
+    id: user.getId().getValue(),
+    email: user.getEmail().getValue().toLowerCase(),
+    password_hash: user.getPassword().getHashedValue(),
+    is_admin: user.getIsAdmin(),
+    roles: user.getRoles() as unknown,
+    name: user.getName(),
+    last_name: user.getLastName(),
+    phone_number: user.getPhoneNumber()?.getValue() ?? null,
+    address: user.getAddress() ?? null,
+    rfc: user.getRfc()?.getValue().toUpperCase() ?? null,
+    status: user.getStatus(),
 
-  /**
-   * Generic helper to check whether a given column value is unique in
-   * the users table.  Returns `true` when no record exists with the
-   * provided value.  Throws a `DataAccessError` if the underlying
-   * query fails.
-   */
-  private async isUniqueValueByField<Field extends keyof UserTable>(
+    created_at: undefined,
+    created_by: user.getAudit()?.createdBy?.id.getValue() ?? null,
+    updated_at: undefined,
+    updated_by: user.getAudit()?.updatedBy?.id.getValue() ?? null,
+    deleted_at: undefined,
+    deleted_by: user.getAudit()?.deletedBy?.id.getValue() ?? null,
+  };
+}
+
+  private async isUniqueValueByField<Field extends keyof UsersTable>(
     value: OperandValueExpressionOrList<Database, 'users', Field>,
-    field: Field
+    field: Field,
   ): Promise<boolean> {
-    try {
-      const result = await this.db
-        .selectFrom('users')
-        .where(field, '=', value)
-        .select(field)
-        .executeTakeFirst();
-      return !result;
-    } catch (error) {
-      throw new DataAccessError(`Error checking uniqueness of ${String(field)}: ${String(value)}`);
-    }
-  }
+    const op = this.db
+      .selectFrom('users')
+      .where(field, '=', value)
+      .select(field)
+      .executeTakeFirst();
 
+    const row = await withDbErrorMapping(op, {
+      context: `unique-check users.${String(field)}`,
+    });
+    return !row;
+  }
 
   async isEmailUnique(email: EmailAddress): Promise<boolean> {
     return this.isUniqueValueByField(email.getValue().toLowerCase(), 'email');
@@ -84,40 +65,32 @@ export class KyselyUserRepository implements UserRepository {
     return this.isUniqueValueByField(rfc.getValue().toUpperCase(), 'rfc');
   }
 
-  /**
-   * Persists a new user entity to the database.  If a unique
-   * constraint is violated the repository throws an
-   * AlreadyValueExistError to allow the application layer to respond
-   * accordingly.  Any low‑level query errors are wrapped in
-   * DataAccessError.
-   */
   async create(user: User): Promise<void> {
     const row = this.toPersistence(user);
-    try {
-      await this.db.insertInto('users').values(row).execute();
-    } catch (error: any) {
-      // PostgreSQL uses error code 23505 for unique violations.  The
-      // constraint property indicates which unique index triggered.
-      if (error?.code === '23505') {
-        const constraint: string | undefined = error?.constraint;
-        if (constraint) {
-          if (constraint.includes('email')) {
-            throw new AlreadyValueExistError(row.email, 'email');
-          } else if (constraint.includes('phone_number')) {
-            throw new AlreadyValueExistError(row.phone_number ?? '', 'phoneNumber');
-          } else if (constraint.includes('rfc')) {
-            throw new AlreadyValueExistError(row.rfc ?? '', 'rfc');
-          }
-        }
-        // Generic duplicate
-        throw new AlreadyValueExistError('', '');
-      }
-      throw new DataAccessError('Error inserting user into database');
-    }
+
+    const op = this.db.insertInto('users').values(row).execute();
+
+    await withDbErrorMapping(op, {
+      context: 'insert users',
+      constraintToDomain: {
+        users_email_unique: () => {
+          throw new AlreadyValueExistError(row.email, 'email');
+        },
+        users_phone_number_unique_partial: () => {
+          throw new AlreadyValueExistError(
+            row.phone_number ?? '',
+            'phoneNumber',
+          );
+        },
+        users_rfc_unique_partial: () => {
+          throw new AlreadyValueExistError(row.rfc ?? '', 'rfc');
+        },
+      },
+    });
   }
 }
 
-
+// ------
 
 // async update(user: User): Promise<void> {
 //   const row = this.toPersistence(user);
@@ -234,8 +207,6 @@ export class KyselyUserRepository implements UserRepository {
 //     hasNextPage: hasNext,
 //   };
 
-
-
 // private toPersistence(user: User): Database['users'] {
 //   return {
 //     id: user.id,
@@ -284,4 +255,3 @@ export class KyselyUserRepository implements UserRepository {
 //     },
 //   });
 // };
-

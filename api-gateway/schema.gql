@@ -36,24 +36,8 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type PaginatedUsers {
-  users: [User!]!
-  totalCount: Float!
-  hasNextPage: Boolean!
-}
-
-type Query {
-  users(limit: Int, offset: Int): PaginatedUsers!
-  user(id: ID!): User!
-}
-
 type Mutation {
   createUser(input: CreateUserInput!): User!
-  updateUser(id: ID!, input: UpdateUserInput!): User!
-  deleteUser(id: ID!): User!
-  assignRole(input: AssignRoleInput!): User!
-  removeRole(input: RemoveRoleInput!): User!
-  toggleAdmin(input: ToggleAdminInput!): User!
 }
 
 input CreateUserInput {
@@ -66,29 +50,4 @@ input CreateUserInput {
   phoneNumber: String
   address: String
   rfc: String
-}
-
-input UpdateUserInput {
-  id: ID!
-  name: String
-  lastName: String
-  phoneNumber: String
-  address: String
-  rfc: String
-  status: AccountStatus
-}
-
-input AssignRoleInput {
-  userId: ID!
-  roles: [BusinessRole!]!
-}
-
-input RemoveRoleInput {
-  userId: ID!
-  roles: [BusinessRole!]!
-}
-
-input ToggleAdminInput {
-  userId: ID!
-  isAdmin: Boolean!
 }

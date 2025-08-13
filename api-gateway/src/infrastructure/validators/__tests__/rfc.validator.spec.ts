@@ -1,22 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { ValidateRFC, RFCValidationInfraError } from '../rfc.validator';
+import { RfcValidator } from '../rfc.validator';
+import { InvalidFormatError } from '@shared/errors/invalid-format.error';
 import * as validateRfcModule from 'validate-rfc';
 
 vi.mock('validate-rfc'); // Mock automático del módulo
 
-describe('RFCValidationInfraError', () => {
-  it('should set the correct name and message', () => {
-    const rfc = 'INVALIDRFC123';
-    const error = new RFCValidationInfraError(rfc);
-
-    expect(error.name).toBe('RFCValidationInfraError');
-    expect(error.message).toBe(`RFC validation failed for "${rfc}"`);
-    expect(error.rfc).toBe(rfc);
-  });
-});
-
-describe('ValidateRFC', () => {
-  const validateRFC = new ValidateRFC();
+describe('RfcValidator', () => {
+  const rfcValidator = new RfcValidator();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -28,10 +18,10 @@ describe('ValidateRFC', () => {
       errors: [],
     });
 
-    expect(validateRFC.validate('ABC123456T78')).toBe(true);
+    expect(rfcValidator.validate('ABC123456T78')).toBe(true);
   });
 
-  it('should throw RFCValidationInfraError if RFC is invalid', () => {
+  it('should throw InvalidFormatError if RFC is invalid', () => {
     const input = 'INVALIDRFC';
 
     vi.spyOn(validateRfcModule, 'default').mockReturnValue({
@@ -39,7 +29,7 @@ describe('ValidateRFC', () => {
       errors: ['INVALID_FORMAT'],
     });
 
-    expect(() => validateRFC.validate(input)).toThrowError(RFCValidationInfraError);
-    expect(() => validateRFC.validate(input)).toThrowError(`RFC validation failed for "${input}"`);
+    expect(() => rfcValidator.validate(input)).toThrowError(InvalidFormatError);
+    expect(() => rfcValidator.validate(input)).toThrowError(`Invalid RFC format: INVALID_FORMAT`);
   });
 });

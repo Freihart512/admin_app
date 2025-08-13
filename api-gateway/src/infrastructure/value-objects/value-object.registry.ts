@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
-import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
-import { RfcValidator } from '@infrastructure/validators/rfc.validator';
-import { UuidValidator } from '@infrastructure/validators/uuid.validator';
+import { RFC, UUID, Password } from '@domain/@shared/value-objects';
+import { RfcValidator, UuidValidator } from '@infrastructure/validators';
+import { BcryptHashingService } from '@infrastructure/services/bcrypt-hashing.service';
+
 
 /**
  * Infrastructure-side composition root for registering VO validators once.
@@ -12,10 +12,12 @@ export class ValueObjectRegistry implements OnModuleInit {
   constructor(
     private readonly rfcValidator: RfcValidator,
     private readonly uuidValidator: UuidValidator,
+    private readonly bcryptHasher: BcryptHashingService,
   ) {}
 
   onModuleInit() {
     RFC.registerValidator(this.rfcValidator);
     UUID.registerValidator(this.uuidValidator);
+    Password.registerHasher(this.bcryptHasher);
   }
 }

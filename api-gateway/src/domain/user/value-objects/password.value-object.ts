@@ -1,46 +1,73 @@
-// domain/value-objects/Password.ts
-import { HashingService } from '../../@shared/ports/hashing.service.port';
+// src/domain/user/value-objects/password.value-object.ts
+import { ValueObject } from '@domain/@shared/value-objects/index.js';
+import { HashingService } from '@domain/@shared/ports';
+import {
+  PasswordHasherNotRegisteredError,
+  InvalidPasswordHashError,
+  InvalidPasswordFormatError,
+  InvalidPasswordFormatReasons,
+} from '@domain/user/errors';
+import { InvalidPasswordFormatReasonsType } from '../user.types';
+import { InvalidFormatError, ServiceUnavailableError } from '@shared/errors';
 
-export class Password {
-  private constructor(private readonly hashedValue: string) {}
+export class Password extends ValueObject<string> {
+  private static readonly MIN_LENGTH = 8;
+  private static hasher?: HashingService;
 
-  public static async create(
-    raw: string,
-    hasher: HashingService
-  ): Promise<Password> {
-    if (!raw || raw.length < 8) {
-      throw new Error('Password must be at least 8 characters long.');
-    }
+  private constructor(hash: string) { super(hash); }
 
-    const hasNumber = /[0-9]/.test(raw);
-    const hasLetter = /[a-zA-Z]/.test(raw);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(raw);
+  static registerHasher(hasher: HashingService): void { Password.hasher = hasher; }
+  static resetForTests(): void { Password.hasher = undefined; }
 
-    if (!(hasNumber && hasLetter && hasSpecial)) {
-      throw new Error('Password must contain a number, letter, and special character.');
-    }
-
-    const hashed = await hasher.hash(raw);
+  static async create(raw: string): Promise<Password> {
+    if (!Password.hasher) throw new PasswordHasherNotRegisteredError();
+    Password.ensurePolicy(raw);
+    const hashed = await Password.hasher.hash(raw);
     return new Password(hashed);
   }
 
-  public static fromHash(hash: string): Password {
-    if (!hash) throw new Error('Cannot create Password from empty hash');
+  static fromHash(hash: string): Password {
+    if (!hash || typeof hash !== 'string') throw new InvalidPasswordHashError();
+    if (!Password.hasher) throw new PasswordHasherNotRegisteredError();
+    try {
+      Password.hasher.validateHash?.(hash);
+    } catch (e) {
+      if (e instanceof InvalidFormatError) throw new InvalidPasswordHashError();
+      if (e instanceof ServiceUnavailableError) throw e; 
+      throw new ServiceUnavailableError('hashing service validate failed');
+    }
     return new Password(hash);
   }
 
-  public async compare(
+  async compare(raw: string): Promise<boolean> {
+    if (!Password.hasher) throw new PasswordHasherNotRegisteredError();
+    return Password.hasher.compare(raw, this.getValue());
+  }
+
+  getHashedValue(): string { return this.getValue(); }
+
+  protected ensureIsValid(hash: string): void {
+    if (!hash || typeof hash !== 'string') throw new InvalidPasswordHashError();
+  }
+
+  private static assertRule(
+    condition: boolean,
     raw: string,
-    hasher: HashingService
-  ): Promise<boolean> {
-    return hasher.compare(raw, this.hashedValue);
+    reason: InvalidPasswordFormatReasonsType,
+  ): void {
+    if (!condition) throw new InvalidPasswordFormatError(raw, reason);
   }
 
-  public getHashedValue(): string {
-    return this.hashedValue;
+  private static ensurePolicy(raw: string): void {
+    const hasMinimumLength = !!raw && raw.length >= Password.MIN_LENGTH;
+    this.assertRule(hasMinimumLength, raw, InvalidPasswordFormatReasons.TooShort);
+    const hasNumber = /[0-9]/.test(raw);
+    const hasLetter = /[a-zA-Z]/.test(raw);
+    const hasSpecial = /[^A-Za-z0-9]/.test(raw);
+    this.assertRule(hasNumber, raw, InvalidPasswordFormatReasons.NotNumber);
+    this.assertRule(hasLetter, raw, InvalidPasswordFormatReasons.NotLetter);
+    this.assertRule(hasSpecial, raw, InvalidPasswordFormatReasons.NotSpecial);
   }
 
-  public equals(other: Password): boolean {
-    return this.hashedValue === other.hashedValue;
-  }
+  public toJSON(): string { return '[REDACTED_PASSWORD_HASH]'; }
 }

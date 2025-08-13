@@ -1,56 +1,55 @@
-// domain/value-objects/UserSummary.ts
-import { ValueObject } from '../../@shared/value-objects/base.value-object';
-import { UUID } from '../../@shared/value-objects/uuid.value-object';
+import { ValueObject } from '@domain/@shared/value-objects/base.value-object';
+import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
 import { EmailAddress } from './email-address.value-object';
 import { AccountStatus } from '../user.types';
-import { InvalidUserSummaryError } from '../errors/invalid-user-summary.error';
-import { UserSummaryType, UserSummaryProps } from '../user.types';
+import { FieldRequiredForUserSummaryError } from '../errors/field-required-for-user-summary.error';
+import { UserSummaryRequiredError } from '../errors/user-summary-required.error';
 
+export interface UserSummaryProps {
+  id: UUID;
+  name: string;
+  lastName: string;
+  email: EmailAddress;
+  status: AccountStatus;
+}
 
-
-export class UserSummary extends ValueObject<UserSummaryType, undefined> {
-  public static create(props: UserSummaryProps): UserSummary {
-    return new UserSummary(props);
+export class UserSummary extends ValueObject<UserSummaryProps> {
+  private constructor(props: UserSummaryProps) {
+    // congela para evitar mutaciones externas (shallow es suficiente aquí)
+    super(Object.freeze({ ...props }));
   }
 
-  public getId(): UUID {
-    return this.value.id;
+  static create(raw: UserSummaryProps): UserSummary {
+    return new UserSummary(raw);
   }
 
-  public getName(): string {
-    return this.value.name;
+  get id(): UUID { return this.getValue().id; }
+  get name(): string { return this.getValue().name; }
+  get lastName(): string { return this.getValue().lastName; }
+  get email(): EmailAddress { return this.getValue().email; }
+  get status(): AccountStatus { return this.getValue().status; }
+
+  protected ensureIsValid(v: UserSummaryProps): void {
+  if (!v) throw new UserSummaryRequiredError();
+
+  if (!v.name?.trim()) throw new FieldRequiredForUserSummaryError('name');
+  if (!v.lastName?.trim()) throw new FieldRequiredForUserSummaryError('lastName');
+}
+
+  public equals(other: unknown): boolean {
+    if (!(other instanceof UserSummary)) return false;
+    const a = this.getValue();
+    const b = other.getValue();
+    return (
+      a.id.equals(b.id) &&
+      a.email.equals(b.email) &&
+      a.name === b.name &&
+      a.lastName === b.lastName &&
+      a.status === b.status
+    );
   }
 
-  public getLastName(): string {
-    return this.value.lastName;
-  }
-
-  public getEmail(): EmailAddress {
-    return this.value.email;
-  }
-
-  public getStatus(): AccountStatus {
-    return this.value.status;
-  }
-
-  public toPrimitives() {
-    return {
-      id: this.getId().getValue(),
-      name: this.getName(),
-      lastName: this.getLastName(),
-      email: this.getEmail().getValue(),
-      status: this.getStatus(),
-    };
-  }
-
-  protected ensureIsValid(props: UserSummaryProps): void {
-    const reasons: string[] = [];
-
-    if (!props.name) reasons.push('Missing name');
-    if (!props.lastName) reasons.push('Missing last name');
-
-    if (reasons.length > 0) {
-      throw new InvalidUserSummaryError(reasons);
-    }
-  }
+  public override toJSON(): UserSummaryProps {
+  return this.getValue();
+}
 }

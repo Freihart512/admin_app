@@ -1,19 +1,31 @@
-export interface UserTable {
-    id: string;
-    email: string;
-    password_hash: string; // Snake case for database column
-    is_admin: boolean; // Snake case for database column
-    roles: string; // Storing roles as a JSON string
-    name: string;
-    last_name: string;
-    phone_number: string | null; // Optional field, nullable in DB
-    address: string | null; // Optional field, nullable in DB
-    rfc: string | null; // Optional field, nullable in DB
-    status: 'active' | 'inactive'; // Using the same status type as domain
-    created_at: Date;
-    created_by: string;
-    updated_at: Date | null;
-    updated_by: string | null;
-    deleted_at: Date | null;
-    deleted_by: string | null;
+// infrastructure/database/types.ts
+import { ColumnType, Selectable, Insertable, Updateable } from 'kysely';
+
+export interface UsersTable {
+  id: string;
+  email: string;
+  password_hash: string;
+  is_admin: boolean;
+  roles: ColumnType<unknown, unknown | undefined, unknown | undefined>; // jsonb
+  name: string;
+  last_name: string;
+  phone_number: string | null;
+  address: string | null;
+  rfc: string | null;
+  status: 'active' | 'inactive';
+  created_at: ColumnType<Date, Date | undefined, Date | undefined>;
+  created_by: ColumnType<string | null, string | null | undefined, string | null | undefined>;
+  updated_at: ColumnType<Date | null, Date | null | undefined, Date | null | undefined>;
+  updated_by: ColumnType<string | null, string | null | undefined, string | null | undefined>;
+  deleted_at: ColumnType<Date | null, Date | null | undefined, Date | null | undefined>;
+  deleted_by: ColumnType<string | null, string | null | undefined, string | null | undefined>;
+}
+
+export type UserRow    = Selectable<UsersTable>;
+export type NewUser    = Insertable<UsersTable>;
+export type UserUpdate = Updateable<UsersTable>;
+
+// Si también tienes Database:
+export interface Database {
+  users: UsersTable;
 }

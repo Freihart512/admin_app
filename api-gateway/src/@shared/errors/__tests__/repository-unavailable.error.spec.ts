@@ -17,8 +17,7 @@ describe('RepositoryUnavailableError', () => {
 
   it('should use the default message if no message is provided', () => {
     const error = new RepositoryUnavailableError();
-    // Assuming the default message from the original definition is used
-    expect(error.message).toBe('RepositoryError'); // Check if it inherits or sets a default
+    expect(error.message).toBe('Repository is currently unavailable.');
   });
 
   it('should use the custom message when provided', () => {

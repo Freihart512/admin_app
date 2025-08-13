@@ -7,26 +7,21 @@ import { Password } from '@domain/user/value-objects/password.value-object';
 import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
 import { RepositoryError, UniqueViolationError, ServiceUnavailableError } from '@shared/errors';
 import { ValueObject } from '@domain/@shared/value-objects/base.value-object';
-import { HashingService } from '@domain/@shared/ports/hashing.service.port';
 import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
 import { PhoneNumber } from '@domain/user/value-objects/phone-number.value-object';
 import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
-import { generateRandomPassword } from '@shared/utils/password-generator';
+import { PasswordGeneratorPort } from '@domain/@shared/ports/password-generator.port';
 
-/**
- * CreateUserUseCase with dependencies via constructor.
- * NOTE: RFC/UUID validators are now registered globally in bootstrap (ValueObjectRegistry).
- */
 export class CreateUserUseCase {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly hashingService: HashingService,
+    private readonly passwordGeneratorService: PasswordGeneratorPort,
   ) {}
 
   async execute(createUserDto: CreateUserDto): Promise<User> {
     const emailAddress = EmailAddress.create(createUserDto.email);
-    const rawPassword = generateRandomPassword();
-    const password = await Password.create(rawPassword, this.hashingService);
+    const rawPassword = this.passwordGeneratorService.getRandomPassword();
+    const password = await Password.create(rawPassword);
 
     await this.validateUniqueValue<EmailAddress>(
       emailAddress,

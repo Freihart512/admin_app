@@ -25,7 +25,7 @@ describe('UniqueViolationError', () => {
     const field = 'email';
     const value = 'test@example.com';
     const error = new UniqueViolationError(field, value);
-    expect(error.message).toBe(`Unique violation on ${field}`); // Message doesn't include value
+    expect(error.message).toBe(`Unique violation on ${field} with value "${value}"`);
   });
 
   it('should expose the field property', () => {

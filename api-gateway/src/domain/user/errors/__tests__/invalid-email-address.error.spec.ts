@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   InvalidEmailAddressError,
 } from '../invalid-email-address.error';
-import { InvalidEmailReasons } from "@domain/user/user.types";
+import { InvalidEmailReasons } from '../';
 
 describe('InvalidEmailAddressError', () => {
   it('should be instance of Error and InvalidEmailAddressError', () => {
@@ -23,7 +23,7 @@ describe('InvalidEmailAddressError', () => {
 
   it('should set the error name correctly', () => {
     const error = new InvalidEmailAddressError('user@longdomain.com', InvalidEmailReasons.TooLong);
-    expect(error.name).toBe('InvalidEmailAddressError');
+    expect(error.name).toBe('InvalidEmailAddress');
   });
 
   it('should generate the correct error message', () => {

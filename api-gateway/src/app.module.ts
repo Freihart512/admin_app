@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { UserModule } from './modules/user/user.module';
+import { AppErrorMapper } from '@shared/services/app-error-mapper.service';
 
 @Module({
   imports: [
@@ -14,7 +13,8 @@ import { UserModule } from './modules/user/user.module';
     }),
     UserModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [AppErrorMapper],
+  exports: [AppErrorMapper],
 })
 export class AppModule {}
