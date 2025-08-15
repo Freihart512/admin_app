@@ -6,7 +6,13 @@ import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
 import { PhoneNumber } from '../value-objects/phone-number.value-object';
 import { UserInitialProps, UserSummaryType } from '../user.types';
 import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
-import { AdminCannotHaveBusinessRolesError, NonAdminMustHaveRolesError, AddressRequiredForOwnerError, FieldRequiredForRoleError, RoleUserCannotBeAdminError } from '../errors';
+import {
+  AdminCannotHaveBusinessRolesError,
+  NonAdminMustHaveRolesError,
+  AddressRequiredForOwnerError,
+  FieldRequiredForRoleError,
+  RoleUserCannotBeAdminError,
+} from '../errors';
 
 export class User {
   private readonly id: UUID;
@@ -43,7 +49,10 @@ export class User {
     this.validateStateConsistency();
   }
 
-  private ensureFieldIsPresent<T>(fieldValue: T | undefined, error: Error): void {
+  private ensureFieldIsPresent<T>(
+    fieldValue: T | undefined,
+    error: Error,
+  ): void {
     if (!fieldValue) {
       throw error;
     }
@@ -57,18 +66,33 @@ export class User {
 
   private validateOwnerRules = (): void => {
     this.ensureFieldIsPresent(this.address, new AddressRequiredForOwnerError());
-    this.ensureFieldIsPresent(this.phoneNumber, new FieldRequiredForRoleError('phone number', BusinessRole.OWNER));
-    this.ensureFieldIsPresent(this.rfc, new FieldRequiredForRoleError('RFC', BusinessRole.OWNER));
-  }
+    this.ensureFieldIsPresent(
+      this.phoneNumber,
+      new FieldRequiredForRoleError('phone number', BusinessRole.OWNER),
+    );
+    this.ensureFieldIsPresent(
+      this.rfc,
+      new FieldRequiredForRoleError('RFC', BusinessRole.OWNER),
+    );
+  };
 
   private validateTenantRules = (): void => {
-    this.ensureFieldIsPresent(this.phoneNumber, new FieldRequiredForRoleError('phone number', BusinessRole.TENANT));
-    this.ensureFieldIsPresent(this.rfc, new FieldRequiredForRoleError('RFC', BusinessRole.TENANT));
-  }
+    this.ensureFieldIsPresent(
+      this.phoneNumber,
+      new FieldRequiredForRoleError('phone number', BusinessRole.TENANT),
+    );
+    this.ensureFieldIsPresent(
+      this.rfc,
+      new FieldRequiredForRoleError('RFC', BusinessRole.TENANT),
+    );
+  };
 
   private validateAccountantRules = (): void => {
-    this.ensureFieldIsPresent(this.phoneNumber, new FieldRequiredForRoleError('phone number', BusinessRole.ACCOUNTANT));
-  }
+    this.ensureFieldIsPresent(
+      this.phoneNumber,
+      new FieldRequiredForRoleError('phone number', BusinessRole.ACCOUNTANT),
+    );
+  };
 
   private roleValidationMap: Record<BusinessRole, () => void> = {
     [BusinessRole.OWNER]: this.validateOwnerRules,
@@ -141,7 +165,9 @@ export class User {
     return this.audit;
   }
 
-  private applyUpdateAuditFields(updatedBy: UserSummaryType): AuditFields | undefined {
+  private applyUpdateAuditFields(
+    updatedBy: UserSummaryType,
+  ): AuditFields | undefined {
     if (!this.audit) {
       return undefined; // Or throw an error if audit is mandatory after creation
     }
@@ -196,7 +222,10 @@ export class User {
     });
   }
 
-  public updatePassword(newPassword: Password, updatedBy: UserSummaryType): User {
+  public updatePassword(
+    newPassword: Password,
+    updatedBy: UserSummaryType,
+  ): User {
     // Note: Updating password might involve specific domain logic
     // (e.g., checking if it's different from the old one).
     // For simplicity here, we just create a new User with the new password.
@@ -207,7 +236,10 @@ export class User {
     });
   }
 
-  public updatePhoneNumber(newPhoneNumber: PhoneNumber | undefined, updatedBy: UserSummaryType): User {
+  public updatePhoneNumber(
+    newPhoneNumber: PhoneNumber | undefined,
+    updatedBy: UserSummaryType,
+  ): User {
     return new User({
       ...this,
       phoneNumber: newPhoneNumber,
@@ -215,7 +247,10 @@ export class User {
     });
   }
 
-  public updateAddress(newAddress: string | undefined, updatedBy: UserSummaryType): User {
+  public updateAddress(
+    newAddress: string | undefined,
+    updatedBy: UserSummaryType,
+  ): User {
     return new User({
       ...this,
       address: newAddress,
@@ -231,7 +266,10 @@ export class User {
     });
   }
 
-  public updateStatus(newStatus: AccountStatus, updatedBy: UserSummaryType): User {
+  public updateStatus(
+    newStatus: AccountStatus,
+    updatedBy: UserSummaryType,
+  ): User {
     // Note: Changing status might have specific domain rules (e.g., cannot
     // change from DELETED, requires approval workflow). This simple update
     // assumes direct status changes are allowed.
@@ -245,12 +283,17 @@ export class User {
     return newUser;
   }
 
-  public updateRoles(newRoles: BusinessRole[], updatedBy: UserSummaryType): User {
+  public updateRoles(
+    newRoles: BusinessRole[],
+    updatedBy: UserSummaryType,
+  ): User {
     if (this.isAdmin) {
       throw new RoleUserCannotBeAdminError();
     }
 
-    const validRoles = newRoles.filter(role => Object.values(BusinessRole).includes(role));
+    const validRoles = newRoles.filter((role) =>
+      Object.values(BusinessRole).includes(role),
+    );
     return new User({
       ...this,
       roles: Array.from(new Set(validRoles)),

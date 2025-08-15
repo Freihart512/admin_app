@@ -1,2 +1,3 @@
-// api-gateway/src/@shared/errors/repository.error.ts
-export class RepositoryError extends Error { name = 'RepositoryError'; }
+export class RepositoryError extends Error {
+  name = 'RepositoryError';
+}

@@ -1,21 +1,30 @@
+import { Injectable, Inject } from '@nestjs/common';
 import { User } from '@domain/user/entity/user.entity';
 import { UserRepository } from '@domain/user/ports/user.repository.port';
 import { CreateUserDto } from '../dtos/user.dto';
-import { AccountStatus } from '@domain/user/user.types';
+import { AccountStatuses } from '@domain/user/user.types';
 import { EmailAddress } from '@domain/user/value-objects/email-address.value-object';
 import { Password } from '@domain/user/value-objects/password.value-object';
-import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
-import { RepositoryError, UniqueViolationError, ServiceUnavailableError } from '@shared/errors';
+import { AlreadyValueExistError } from '@domain/user/errors';
 import { ValueObject } from '@domain/@shared/value-objects/base.value-object';
 import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
 import { PhoneNumber } from '@domain/user/value-objects/phone-number.value-object';
 import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
 import { PasswordGeneratorPort } from '@domain/@shared/ports/password-generator.port';
+import { AppError } from '@shared/errors';
+import { AppErrorCodes } from '@shared/core/types';
+import { ErrorMapperPort } from '@domain/@shared/ports';
 
+@Injectable()
 export class CreateUserUseCase {
   constructor(
+    @Inject('UserRepository')
     private readonly userRepository: UserRepository,
+
+    @Inject('PasswordGeneratorPort')
     private readonly passwordGeneratorService: PasswordGeneratorPort,
+
+    @Inject('ErrorMapperPort') private readonly error: ErrorMapperPort,
   ) {}
 
   async execute(createUserDto: CreateUserDto): Promise<User> {
@@ -23,16 +32,20 @@ export class CreateUserUseCase {
     const rawPassword = this.passwordGeneratorService.getRandomPassword();
     const password = await Password.create(rawPassword);
 
-    await this.validateUniqueValue<EmailAddress>(
+    await this.ensureUnique<EmailAddress>(
       emailAddress,
-      (v) => this.userRepository.isEmailUnique(v),
+      () =>
+        this.error.wrap(
+          this.userRepository.isEmailUnique(emailAddress),
+          'users.isEmailUnique',
+        ),
       'email',
     );
 
     const newUser = new User({
       id: UUID.create(createUserDto.id),
       email: emailAddress,
-      password: password,
+      password,
       isAdmin: createUserDto.isAdmin ?? false,
       name: createUserDto.name,
       lastName: createUserDto.lastName,
@@ -41,60 +54,71 @@ export class CreateUserUseCase {
         ? PhoneNumber.create(createUserDto.phoneNumber)
         : undefined,
       address: createUserDto.address,
-      status: AccountStatus.ACTIVE,
+      status: AccountStatuses.ACTIVE,
       rfc: createUserDto.rfc ? RFC.create(createUserDto.rfc) : undefined,
     });
 
+    // Unicidad condicional de RFC y teléfono, en paralelo
+    const checks: Promise<unknown>[] = [];
     const rfcVo = newUser.getRfc();
-    const phoneNumberVo = newUser.getPhoneNumber();
-    const checks: Promise<boolean>[] = [];
+    const phoneVo = newUser.getPhoneNumber();
+
     if (rfcVo) {
       checks.push(
-        this.validateUniqueValue<RFC>(rfcVo, (v) => this.userRepository.isRfcUnique(v), 'rfc'),
+        this.ensureUnique<RFC>(
+          rfcVo,
+          () =>
+            this.error.wrap(
+              this.userRepository.isRfcUnique(rfcVo),
+              'users.isRfcUnique',
+            ),
+          'rfc',
+        ),
       );
     }
-    if (phoneNumberVo) {
+    if (phoneVo) {
       checks.push(
-        this.validateUniqueValue<PhoneNumber>(
-          phoneNumberVo,
-          (v) => this.userRepository.isPhoneNumberUnique(v),
+        this.ensureUnique<PhoneNumber>(
+          phoneVo,
+          () =>
+            this.error.wrap(
+              this.userRepository.isPhoneNumberUnique(phoneVo),
+              'users.isPhoneNumberUnique',
+            ),
           'phone number',
         ),
       );
     }
     await Promise.all(checks);
 
+    // Persistencia
     try {
-      await this.userRepository.create(newUser);
-    } catch (err: unknown) {
-      if (err instanceof UniqueViolationError) {
-        throw new AlreadyValueExistError(err.value ?? '', err.field);
+      await this.error.wrap(
+        this.userRepository.create(newUser),
+        'users.create',
+      );
+    } catch (e) {
+      // Opcional: si quieres seguir lanzando errores de dominio, traduce AppError aquí.
+      if (e instanceof AppError) {
+        if (e.code === AppErrorCodes.ALREADY_EXISTS) {
+          // perdemos field/value específicos al mapear, así que devolvemos un mensaje genérico
+          throw new AlreadyValueExistError('value', 'unique');
+        }
       }
-      if (err instanceof RepositoryError) {
-        throw new ServiceUnavailableError('Imposible crear usuario en este momento.');
-      }
-      throw err;
+      throw e; // re-lanza AppError (lo manejará el resolver)
     }
+
     return newUser;
   }
 
-  private async validateUniqueValue<VO extends ValueObject<string>>(
+  private async ensureUnique<VO extends ValueObject<string>>(
     value: VO,
-    checkFunction: (value: VO) => Promise<boolean>,
+    repoCheck: () => Promise<boolean>, // ya envuelto con mapper
     fieldName: string,
-  ): Promise<boolean> {
-    try {
-      const isUnique = await checkFunction(value);
-      if (!isUnique) {
-        throw new AlreadyValueExistError(value.getValue(), fieldName);
-      }
-      return true;
-    } catch (error: unknown) {
-      if (error instanceof AlreadyValueExistError) throw error;
-      if (error instanceof RepositoryError) {
-        throw new ServiceUnavailableError('Imposible verificar valores únicos');
-      }
-      throw error;
+  ): Promise<void> {
+    const isUnique = await repoCheck();
+    if (!isUnique) {
+      throw new AlreadyValueExistError(value.getValue(), fieldName);
     }
   }
 }

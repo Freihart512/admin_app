@@ -23,18 +23,29 @@ export class UserSummary extends ValueObject<UserSummaryProps> {
     return new UserSummary(raw);
   }
 
-  get id(): UUID { return this.getValue().id; }
-  get name(): string { return this.getValue().name; }
-  get lastName(): string { return this.getValue().lastName; }
-  get email(): EmailAddress { return this.getValue().email; }
-  get status(): AccountStatus { return this.getValue().status; }
+  get id(): UUID {
+    return this.getValue().id;
+  }
+  get name(): string {
+    return this.getValue().name;
+  }
+  get lastName(): string {
+    return this.getValue().lastName;
+  }
+  get email(): EmailAddress {
+    return this.getValue().email;
+  }
+  get status(): AccountStatus {
+    return this.getValue().status;
+  }
 
   protected ensureIsValid(v: UserSummaryProps): void {
-  if (!v) throw new UserSummaryRequiredError();
+    if (!v) throw new UserSummaryRequiredError();
 
-  if (!v.name?.trim()) throw new FieldRequiredForUserSummaryError('name');
-  if (!v.lastName?.trim()) throw new FieldRequiredForUserSummaryError('lastName');
-}
+    if (!v.name?.trim()) throw new FieldRequiredForUserSummaryError('name');
+    if (!v.lastName?.trim())
+      throw new FieldRequiredForUserSummaryError('lastName');
+  }
 
   public equals(other: unknown): boolean {
     if (!(other instanceof UserSummary)) return false;
@@ -50,6 +61,6 @@ export class UserSummary extends ValueObject<UserSummaryProps> {
   }
 
   public override toJSON(): UserSummaryProps {
-  return this.getValue();
-}
+    return this.getValue();
+  }
 }

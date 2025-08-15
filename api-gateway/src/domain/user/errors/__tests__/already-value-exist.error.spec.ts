@@ -9,7 +9,9 @@ describe('AlreadyValueExistError', () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error.name).toBe('AlreadyValueExistError');
-    expect(error.message).toBe(`Already exist an user with ${testField} value: "${testValue}"`);
+    expect(error.message).toBe(
+      `Already exist an user with ${testField} value: "${testValue}"`,
+    );
 
     expect(error.value).toBe(testValue);
     expect(error.field).toBe(testField);
@@ -22,7 +24,9 @@ describe('AlreadyValueExistError', () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error.name).toBe('AlreadyValueExistError');
-    expect(error.message).toBe(`Already exist an user with ${testField} value: "${testValue}"`);
+    expect(error.message).toBe(
+      `Already exist an user with ${testField} value: "${testValue}"`,
+    );
 
     expect(error.value).toBe(testValue);
     expect(error.field).toBe(testField);

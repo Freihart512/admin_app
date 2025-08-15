@@ -1,7 +1,11 @@
 import { ValueObject } from './base.value-object';
-import { InvalidRFCError, RFCValidationReason } from '../errors/invalid-rfc.error';
+import {
+  InvalidRFCError,
+  RFCValidationReason,
+} from '../errors/invalid-rfc.error';
 import { RFCValidatorPort } from '../ports/rfc.validator.port';
 import { InvalidFormatError } from '@shared/errors/invalid-format.error';
+import { ValidatorNotRegisteredError } from '../errors/validator-not-registered.error';
 
 export class RFC extends ValueObject<string> {
   private static validator?: RFCValidatorPort;
@@ -11,18 +15,13 @@ export class RFC extends ValueObject<string> {
     RFC.validator = validator;
   }
 
-  /** Sólo para tests: evitar fugas entre casos */
-  static resetForTests(): void {
-    RFC.validator = undefined;
-  }
-
   /** API de dominio */
   static create(raw: string): RFC {
     if (!raw) {
       throw new InvalidRFCError('', RFCValidationReason.Empty);
     }
     if (!RFC.validator) {
-      throw new Error('RFC validator has not been registered');
+      throw new ValidatorNotRegisteredError('rfc');
     }
     // Normalizamos a mayúsculas porque el RFC es case-insensitive por convención
     return new RFC(raw.toUpperCase());

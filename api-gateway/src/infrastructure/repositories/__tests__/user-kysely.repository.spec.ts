@@ -19,6 +19,7 @@ import {
 import { PhoneNumber } from '@domain/user/value-objects/phone-number.value-object';
 import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
 import { DataAccessError } from '@infrastructure/database/errors/data-access.error';
+import type { HashingService } from '@domain/@shared/ports/hashing.service.port';
 
 // Mock the Kysely database instance
 const mockKyselyDb = {
@@ -55,6 +56,14 @@ describe('KyselyUserRepository', () => {
       jti: UUID.create('jti-id'),
     };
 
+    // Register a dummy hashing service for Password.fromHash used in mockUser
+    const dummyHasher: HashingService = {
+      hash: vi.fn(),
+      compare: vi.fn(),
+      validateHash: vi.fn(() => true),
+    };
+    Password.registerHasher(dummyHasher);
+
     mockUser = new User({
       id: UUID.create('user-id'),
       email: EmailAddress.create('test@example.com'),
@@ -78,6 +87,11 @@ describe('KyselyUserRepository', () => {
     });
 
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Reset the Password hasher to avoid test leakage
+    Password.resetForTests();
   });
 
   describe('create', () => {
@@ -210,7 +224,9 @@ describe('KyselyUserRepository', () => {
   describe('isRfcUnique', () => {
     it('should return true if RFC is unique', async () => {
       vi.mocked(mockKyselyDb.executeTakeFirst).mockResolvedValueOnce(undefined);
-      const isUnique = await userRepository.isRfcUnique(RFC.create('UNIQ123456'));
+      const isUnique = await userRepository.isRfcUnique(
+        RFC.create('UNIQ123456'),
+      );
       expect(isUnique).toBe(true);
     });
 
@@ -218,7 +234,9 @@ describe('KyselyUserRepository', () => {
       vi.mocked(mockKyselyDb.executeTakeFirst).mockResolvedValueOnce({
         rfc: 'DUPL123456',
       });
-      const isUnique = await userRepository.isRfcUnique(RFC.create('DUPL123456'));
+      const isUnique = await userRepository.isRfcUnique(
+        RFC.create('DUPL123456'),
+      );
       expect(isUnique).toBe(false);
     });
   });

@@ -1,5 +1,7 @@
 import { PasswordGeneratorPort } from '@domain/@shared/ports/password-generator.port';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PasswordGeneratorService implements PasswordGeneratorPort {
   getRandomPassword(length: number = 12): string {
     const numbers = '0123456789';
@@ -7,63 +9,33 @@ export class PasswordGeneratorService implements PasswordGeneratorPort {
     const specialChars = '!@#$%^&*(),.?":{}|<>';
     const allChars = numbers + letters + specialChars;
 
-    if (length < 8) {
-      length = 8; // Ensure minimum length
+    const finalLength = Math.max(length, 8);
+
+    const passwordChars: string[] = [];
+
+    // 1. Ensure at least one of each required character type
+    passwordChars.push(numbers[Math.floor(Math.random() * numbers.length)]);
+    passwordChars.push(letters[Math.floor(Math.random() * letters.length)]);
+    passwordChars.push(
+      specialChars[Math.floor(Math.random() * specialChars.length)],
+    );
+
+    // 2. Fill the rest of the password length with random characters from all types
+    for (let i = 3; i < finalLength; i++) {
+      passwordChars.push(
+        allChars[Math.floor(Math.random() * allChars.length)],
+      );
     }
 
-    let password = '';
-    let hasNumber = false;
-    let hasLetter = false;
-    let hasSpecial = false;
-
-    // Ensure at least one of each required character type
-    password += numbers[Math.floor(Math.random() * numbers.length)];
-    password += letters[Math.floor(Math.random() * letters.length)];
-    password += specialChars[Math.floor(Math.random() * specialChars.length)];
-
-    hasNumber = true;
-    hasLetter = true;
-    hasSpecial = true;
-
-    // Fill the rest of the password length with random characters
-    for (let i = password.length; i < length; i++) {
-      const randomChar = allChars[Math.floor(Math.random() * allChars.length)];
-      password += randomChar;
-
-      if (numbers.includes(randomChar)) hasNumber = true;
-      if (letters.includes(randomChar)) hasLetter = true;
-      if (specialChars.includes(randomChar)) hasSpecial = true;
+    // 3. Shuffle the password array to ensure randomness
+    for (let i = passwordChars.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [passwordChars[i], passwordChars[j]] = [
+        passwordChars[j],
+        passwordChars[i],
+      ]; // Fisher-Yates shuffle
     }
 
-    // Shuffle the password to ensure randomness
-    password = password
-      .split('')
-      .sort(() => 0.5 - Math.random())
-      .join('');
-
-    // Re-check and add missing character types if shuffling removed them (unlikely but safe)
-    if (!hasNumber) {
-      const index = Math.floor(Math.random() * password.length);
-      password =
-        password.substring(0, index) +
-        numbers[Math.floor(Math.random() * numbers.length)] +
-        password.substring(index + 1);
-    }
-    if (!hasLetter) {
-      const index = Math.floor(Math.random() * password.length);
-      password =
-        password.substring(0, index) +
-        letters[Math.floor(Math.random() * letters.length)] +
-        password.substring(index + 1);
-    }
-    if (!hasSpecial) {
-      const index = Math.floor(Math.random() * password.length);
-      password =
-        password.substring(0, index) +
-        specialChars[Math.floor(Math.random() * specialChars.length)] +
-        password.substring(index + 1);
-    }
-
-    return password;
+    return passwordChars.join('');
   }
 }

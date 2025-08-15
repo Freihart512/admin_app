@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { EmailAddress } from '../email-address.value-object';
-import { InvalidEmailAddress, InvalidEmailReasons } from '../../errors/invalid-email-address.error';
+import { InvalidEmailAddressError } from '../../errors/invalid-email-address.error';
+import { InvalidEmailReasons } from '../../errors';
 
 describe('EmailAddress', () => {
   it('should create a valid EmailAddress', () => {
@@ -9,31 +10,52 @@ describe('EmailAddress', () => {
   });
 
   it('should throw for empty string', () => {
-    expect(() => EmailAddress.create('')).toThrowError(InvalidEmailAddress);
-    expect(() => EmailAddress.create('')).toThrowError(/invalid_format/i);
+    try {
+      EmailAddress.create('');
+    } catch (err) {
+      expect(err).toBeInstanceOf(InvalidEmailAddressError);
+      // Empty input is treated as an invalid format
+      expect(err.reason).toBe(InvalidEmailReasons.InvalidFormat);
+    }
   });
 
   it('should throw for invalid format (missing @)', () => {
-    expect(() => EmailAddress.create('invalid-email.com')).toThrowError(InvalidEmailAddress);
-    expect(() => EmailAddress.create('invalid-email.com')).toThrowError(/invalid_format/i);
+    try {
+      EmailAddress.create('invalid-email.com');
+    } catch (err) {
+      expect(err).toBeInstanceOf(InvalidEmailAddressError);
+      expect(err.reason).toBe(InvalidEmailReasons.InvalidFormat);
+    }
   });
 
   it('should throw for invalid format (missing domain)', () => {
-    expect(() => EmailAddress.create('user@')).toThrowError(InvalidEmailAddress);
+    expect(() => EmailAddress.create('user@')).toThrowError(
+      InvalidEmailAddressError,
+    );
   });
 
   it('should throw for invalid format (missing user)', () => {
-    expect(() => EmailAddress.create('@example.com')).toThrowError(InvalidEmailAddress);
+    expect(() => EmailAddress.create('@example.com')).toThrowError(
+      InvalidEmailAddressError,
+    );
   });
 
   it('should throw if email is too long', () => {
-    const local = 'a'.repeat(64); // max local part is 64 chars
-    const domain = 'b'.repeat(189); // 254 - 64 - 1 ('@')
+    // Create an email exceeding 254 characters.  The local part can be
+    // up to 64 characters; the remainder ensures the total length
+    // exceeds the specification.  When too long the reason should be
+    // TooLong.
+    const local = 'a'.repeat(64);
+    const domain = 'b'.repeat(189);
     const longEmail = `${local}@${domain}.com`;
 
     expect(longEmail.length).toBeGreaterThan(254);
-    expect(() => EmailAddress.create(longEmail)).toThrowError(InvalidEmailAddress);
-    expect(() => EmailAddress.create(longEmail)).toThrowError(/too_long/i);
+    try {
+      EmailAddress.create(longEmail);
+    } catch (err) {
+      expect(err).toBeInstanceOf(InvalidEmailAddressError);
+      expect(err.reason).toBe(InvalidEmailReasons.TooLong);
+    }
   });
 
   it('should return primitive value in toJSON and toString', () => {

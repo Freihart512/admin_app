@@ -13,7 +13,7 @@ export async function up(db: Kysely<Database>): Promise<void> {
     )
     .addColumn('name', 'text', (col) => col.notNull())
     .addColumn('last_name', 'text', (col) => col.notNull())
-    .addColumn('phone_number', 'text') 
+    .addColumn('phone_number', 'text')
     .addColumn('address', 'text')
     .addColumn('rfc', 'text')
     .addColumn('status', 'text', (col) => col.notNull().defaultTo('active'))
@@ -61,7 +61,8 @@ export async function up(db: Kysely<Database>): Promise<void> {
     .values({
       id: adminId,
       email: 'admin@example.com',
-      password_hash: '$2b$10$jp/rC6D5QUQCGLf6oNnjbedLZssIZz7hBk47S./n/x1BSbb.w9k1q', // hash de 'taco1234'
+      password_hash:
+        '$2b$10$jp/rC6D5QUQCGLf6oNnjbedLZssIZz7hBk47S./n/x1BSbb.w9k1q', // hash de 'taco1234'
       is_admin: true,
       roles: sql`'[]'::jsonb`,
       name: 'Admin',

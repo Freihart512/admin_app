@@ -1,8 +1,8 @@
 import { User } from '@domain/user/entity/user.entity';
 import { EmailAddress } from '@domain/user/value-objects/email-address.value-object';
 import { UUID } from '@domain/@shared/value-objects/uuid.value-object';
-import { FindPaginatedParams, PaginatedResult } from '@shared/core/types'
-import { UserFilters } from '@domain/user/user.types'
+import { FindPaginatedParams, PaginatedResult } from '@shared/core/types';
+import { UserFilters } from '@domain/user/user.types';
 import { RFC } from '@domain/@shared/value-objects/rfc.value-object';
 import { PhoneNumber } from '../value-objects/phone-number.value-object';
 

@@ -12,14 +12,15 @@ import {
   NonAdminMustHaveRolesError,
   AddressRequiredForOwnerError,
 } from '@domain/user/errors';
-import { ServiceUnavailableError } from '@shared/errors/service-unavailable.error';
-import { v4 as uuidv4 } from 'uuid';
 import {
   BadRequestException,
   ConflictException,
   ServiceUnavailableException,
   InternalServerErrorException,
 } from '@nestjs/common';
+
+import { AppError } from '@shared/errors/app-error';
+import { AppErrorCodes } from '@shared/core/types';
 
 @Resolver(() => GraphQLUser)
 export class UserResolver {
@@ -29,10 +30,8 @@ export class UserResolver {
   async createUser(
     @Args('input') input: CreateUserInput,
   ): Promise<GraphQLUser> {
-    const userId = uuidv4();
-
     const createUserDto: CreateUserDto = {
-      id: userId,
+      id: crypto.randomUUID(),
       email: input.email,
       isAdmin: input.isAdmin ?? false,
       name: input.name,
@@ -48,18 +47,28 @@ export class UserResolver {
         await this.createUserUseCase.execute(createUserDto);
       return this.mapDomainUserToGraphQLUser(createdUser);
     } catch (error: any) {
-      if (error instanceof AlreadyValueExistError) {
+      if (error instanceof AlreadyValueExistError)
         throw new ConflictException(error.message);
-      }
-      if (error instanceof ServiceUnavailableError) {
-        throw new ServiceUnavailableException(error.message);
-      }
       if (
         error instanceof AdminCannotHaveBusinessRolesError ||
         error instanceof NonAdminMustHaveRolesError ||
         error instanceof AddressRequiredForOwnerError
       ) {
         throw new BadRequestException(error.message);
+      }
+
+      if (error instanceof AppError) {
+        switch (error.code) {
+          case AppErrorCodes.VALIDATION:
+            throw new BadRequestException(error.message);
+          case AppErrorCodes.ALREADY_EXISTS:
+            throw new ConflictException(error.message);
+          case AppErrorCodes.SERVICE_UNAVAILABLE:
+          case AppErrorCodes.TIMEOUT:
+            throw new ServiceUnavailableException(error.message);
+          default:
+            throw new InternalServerErrorException(error.message);
+        }
       }
       console.error('Unexpected error in UserResolver.createUser:', error);
       throw new InternalServerErrorException(

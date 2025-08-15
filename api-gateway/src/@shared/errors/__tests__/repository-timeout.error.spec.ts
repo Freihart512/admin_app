@@ -24,7 +24,8 @@ describe('RepositoryTimeoutError', () => {
   });
 
   it('should use a custom message when provided', () => {
-    const customMessage = 'The repository operation timed out after 30 seconds.';
+    const customMessage =
+      'The repository operation timed out after 30 seconds.';
     const error = new RepositoryTimeoutError(customMessage);
     expect(error.message).toBe(customMessage);
   });

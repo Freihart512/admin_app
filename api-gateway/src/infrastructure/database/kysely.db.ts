@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { UserTable } from './types';
 
 export interface Database {
-  users: UserTable ;
+  users: UserTable;
   // Add other tables here as you define them
 }
 

@@ -1,10 +1,10 @@
-import { BusinessRole, AccountStatus } from '@domain/user/user.types'; // Assuming BusinessRole and AccountStatus are defined here
+import { BusinessRoleType, AccountStatusType } from '@domain/user';
 
 export class CreateUserDto {
-  id!:string;
+  id!: string;
   email!: string;
   isAdmin: boolean = false;
-  roles: BusinessRole[] = [];
+  roles: BusinessRoleType[] = [];
   name!: string;
   lastName!: string;
   phoneNumber?: string;
@@ -23,12 +23,12 @@ export class UpdateUserDto {
 
 export class AssignRoleDto {
   userId!: string;
-  roles!: BusinessRole[];
+  roles!: BusinessRoleType[];
 }
 
 export class RemoveRoleDto {
   userId!: string;
-  roles!: BusinessRole[];
+  roles!: BusinessRoleType[];
 }
 
 export class ToggleAdminDto {
@@ -40,13 +40,13 @@ export class UserDto {
   id!: string;
   email!: string;
   isAdmin!: boolean;
-  roles!: BusinessRole[];
+  roles!: BusinessRoleType[];
   name!: string;
   lastName!: string;
   phoneNumber?: string;
   address?: string;
   rfc?: string;
-  status!: AccountStatus;
+  status!: AccountStatusType;
   createdAt!: Date;
   createdBy!: string;
   updatedAt?: Date | null;

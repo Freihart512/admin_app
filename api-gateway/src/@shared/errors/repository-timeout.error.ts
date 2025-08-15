@@ -1,4 +1,4 @@
-import { RepositoryError } from './repository.error';
+import { RepositoryError } from './';
 
 export class RepositoryTimeoutError extends RepositoryError {
   name = 'RepositoryTimeoutError';

@@ -4,17 +4,16 @@ import { ValueObject } from '../base.value-object';
 
 // MOCK CLASS FOR TESTING
 class TestVO extends ValueObject<string> {
-    protected ensureIsValid(value: string): void {
-      if (!value || value.length < 3) {
-        throw new Error('Value must be at least 3 characters long');
-      }
-    }
-  
-    public static create(value: string): TestVO {
-      return new TestVO(value);
+  protected ensureIsValid(value: string): void {
+    if (!value || value.length < 3) {
+      throw new Error('Value must be at least 3 characters long');
     }
   }
 
+  public static create(value: string): TestVO {
+    return new TestVO(value);
+  }
+}
 
 describe('ValueObject', () => {
   it('should create a value object with valid value', () => {
@@ -51,12 +50,12 @@ describe('ValueObject', () => {
   it('should return false for value objects of different classes', () => {
     class AnotherVO extends ValueObject<string> {
       protected ensureIsValid(): void {}
-  
+
       public static create(value: string): AnotherVO {
         return new AnotherVO(value);
       }
     }
-  
+
     const a = TestVO.create('same');
     const b = AnotherVO.create('same');
     expect(a.equals(b)).toBe(false);

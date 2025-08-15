@@ -1,5 +1,3 @@
-
 export interface RFCValidatorPort {
-    validate(rfc: string): boolean
-  }
-  
+  validate(rfc: string): boolean;
+}

@@ -7,101 +7,115 @@ import boundaries from 'eslint-plugin-boundaries';
 import prettierRecommended from 'eslint-plugin-prettier/recommended';
 
 export default tseslint.config(
-  // Ignora el propio config
-  { ignores: ['eslint.config.mjs'] },
-
-  // Recomendados de ESLint y TS
+  { ignores: ['eslint.config.mjs', 'dist', 'coverage', 'node_modules'] },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
-
-  // Recomendado de Prettier (opcional, si lo usas)
   prettierRecommended,
-
-  // Config base
   {
-    plugins: { boundaries },
+    plugins: {
+      boundaries,
+    },
     languageOptions: {
-      // Usa ESM si exportas `export default` (recomendado).
       sourceType: 'module',
       globals: {
         ...globals.node,
         ...globals.jest,
       },
       parserOptions: {
-        // Necesario para las reglas type-checked de @typescript-eslint
-        projectService: true,
+        project: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
     settings: {
-      // Define tus “capas” para eslint-plugin-boundaries
       'boundaries/elements': [
-        { type: 'shared', pattern: 'src/@shared/**' },
-        { type: 'domain', pattern: 'src/domain/**' },
-        { type: 'application', pattern: 'src/application/**' },
-        { type: 'infrastructure', pattern: 'src/infrastructure/**' },
-        { type: 'tests', pattern: 'src/__tests__/**' },
+        {
+          type: 'domain',
+          pattern: 'src/domain',
+        },
+        {
+          type: 'application',
+          pattern: 'src/application',
+        },
+        {
+          type: 'infrastructure',
+          pattern: 'src/infrastructure',
+        },
+        {
+          type: 'shared',
+          pattern: 'src/@shared',
+        },
+        {
+          type: 'main',
+          pattern: ['src/main.ts', 'src/app.module.ts', 'src/modules'],
+        },
       ],
     },
     rules: {
-      // TS/estilo
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'off',
       'no-console': 'warn',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
 
-      // Boundaries
-      'boundaries/allowed-imports': [
+      // Hexagonal Architecture boundaries
+      'boundaries/element-types': [
         'error',
         {
+          default: 'disallow',
           rules: [
-            // Importaciones dentro de @shared
-            { from: 'src/@shared/*', to: 'src/@shared/*', allow: true },
-
-            // Desde fuera de @shared sólo permitir index.ts y types.ts
             {
-              from: 'src/*',
-              to: 'src/@shared/*',
-              except: ['src/@shared/index.ts', 'src/@shared/core/types.ts'],
-              allow: false,
+              from: ['domain'],
+              disallow: ['application', 'infrastructure', 'main', 'shared'],
             },
-
-            // Dominio sólo accedido por application (no al revés)
-            { from: 'src/domain', to: 'src/application' },
-
-            // Application puede importar infraestructura
-            { from: 'src/application', to: 'src/infrastructure' },
-
-            // Tests no importan otras capas (ajusta si quieres)
-            { from: 'src/__tests__', to: 'src/application', allow: false },
-            { from: 'src/__tests__', to: 'src/infrastructure', allow: false },
+            {
+              from: ['application'],
+              allow: ['domain', 'shared'],
+            },
+            {
+              from: ['infrastructure'],
+              allow: ['application', 'domain', 'shared'],
+            },
+            {
+            from: ['main'],
+              allow: ['application', 'domain', 'infrastructure', 'shared'],
+            },
+            {
+              from: ['shared'],
+              disallow: ['application', 'domain', 'infrastructure', 'main'],
+            },
           ],
         },
       ],
-      'boundaries/explicit-barriers': [
-        'error',
-        { enforce: 'within-boundaries', allowSameDirectory: true },
-      ],
-      'boundaries/no-dependency-cycle': 'error',
-    },
-  },
 
-  // ✅ Overrides: VAN COMO OBJETOS SEPARADOS (no dentro de `rules`)
-  {
-    files: ['**/__tests__/**/*.ts', '**/*.spec.ts', '**/*.test.ts'],
-    rules: {
-      'boundaries/explicit-barriers': 'off',
+      // Enforce index-only imports between modules
+      'boundaries/entry-point': [
+        'error',
+        {
+          default: 'disallow',
+          rules: [
+            {
+              target: ['domain', 'application', 'infrastructure', 'shared', 'main'],
+              allow: ['**/index.ts', '**/types.ts'],
+            },
+          ],
+        },
+      ],
+      'boundaries/no-private': ['error'],
+      'boundaries/no-ignored': 'error',
+      'boundaries/no-unknown-files': 'off', // Disabled for now
     },
   },
   {
-    files: ['src/infrastructure/**/*'],
+    files: ['**/*.spec.ts', '**/*.test.ts', '**/__tests__/**'],
     rules: {
-      'boundaries/explicit-barriers': [
-        'error',
-        { enforce: 'within-boundaries', allowSameDirectory: false },
-      ],
+      'boundaries/element-types': 'off',
+      'boundaries/entry-point': 'off',
+      'boundaries/no-private': 'off',
+      'boundaries/no-ignored': 'off',
     },
   },
 );

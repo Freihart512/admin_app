@@ -1,5 +1,4 @@
-import { InvalidPasswordFormatReasonsType } from "../user.types";
-
+import { InvalidPasswordFormatReasonsType } from '../user.types';
 
 export class InvalidPasswordFormatError extends Error {
   constructor(

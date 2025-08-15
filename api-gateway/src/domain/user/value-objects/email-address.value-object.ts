@@ -11,7 +11,10 @@ export class EmailAddress extends ValueObject<string> {
 
   protected ensureIsValid(value: string): void {
     if (!value || !EmailAddress.EMAIL_REGEX.test(value)) {
-      throw new InvalidEmailAddressError(value, InvalidEmailReasons.InvalidFormat);
+      throw new InvalidEmailAddressError(
+        value,
+        InvalidEmailReasons.InvalidFormat,
+      );
     }
 
     if (value.length > 254) {

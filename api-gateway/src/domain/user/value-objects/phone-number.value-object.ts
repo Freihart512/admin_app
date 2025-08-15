@@ -1,6 +1,6 @@
 // domain/value-objects/PhoneNumber.ts
 import { ValueObject } from '../../@shared/value-objects/base.value-object';
-import { InvalidPhoneNumberReasons } from '../errors/index.js';
+import { InvalidPhoneNumberReasons } from '../errors';
 import { InvalidPhoneNumberError } from '../errors/invalid-phone-number.error';
 
 export class PhoneNumber extends ValueObject<string> {
@@ -16,11 +16,17 @@ export class PhoneNumber extends ValueObject<string> {
 
   protected ensureIsValid(value: string): void {
     if (!value || typeof value !== 'string') {
-     throw new InvalidPhoneNumberError(value, InvalidPhoneNumberReasons.MissingValue);
+      throw new InvalidPhoneNumberError(
+        value,
+        InvalidPhoneNumberReasons.MissingValue,
+      );
     }
 
     if (!PhoneNumber.PHONE_REGEX.test(value)) {
-      throw new InvalidPhoneNumberError(value, InvalidPhoneNumberReasons.InvalidFormat);
+      throw new InvalidPhoneNumberError(
+        value,
+        InvalidPhoneNumberReasons.InvalidFormat,
+      );
     }
   }
 }

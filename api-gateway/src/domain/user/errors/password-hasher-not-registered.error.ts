@@ -1,6 +1,6 @@
 export class PasswordHasherNotRegisteredError extends Error {
-  constructor() {
-    super('Password hasher has not been registered');
+  constructor(message = 'Password hasher not registered') {
+    super(message);
     this.name = 'PasswordHasherNotRegisteredError';
   }
 }

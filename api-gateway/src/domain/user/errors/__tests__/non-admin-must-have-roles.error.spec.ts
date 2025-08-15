@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'; 
+import { describe, it, expect } from 'vitest';
 import { NonAdminMustHaveRolesError } from '../non-admin-must-have-roles.error';
 
 describe('NonAdminMustHaveRolesError', () => {

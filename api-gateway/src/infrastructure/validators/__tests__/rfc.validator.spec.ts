@@ -30,6 +30,8 @@ describe('RfcValidator', () => {
     });
 
     expect(() => rfcValidator.validate(input)).toThrowError(InvalidFormatError);
-    expect(() => rfcValidator.validate(input)).toThrowError(`Invalid RFC format: INVALID_FORMAT`);
+    expect(() => rfcValidator.validate(input)).toThrowError(
+      `Invalid RFC format: INVALID_FORMAT`,
+    );
   });
 });

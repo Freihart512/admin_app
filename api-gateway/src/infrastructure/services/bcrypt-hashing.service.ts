@@ -2,9 +2,11 @@
 import * as bcrypt from 'bcrypt';
 import { HashingService } from '@domain/@shared/ports';
 import { InvalidFormatError, ServiceUnavailableError } from '@shared/errors';
+import { Injectable } from '@nestjs/common';
 
 type BcryptOptions = { saltRounds?: number; minAcceptedCost?: number };
 
+@Injectable()
 export class BcryptHashingService implements HashingService {
   private readonly saltRounds: number;
   private readonly minAcceptedCost: number;

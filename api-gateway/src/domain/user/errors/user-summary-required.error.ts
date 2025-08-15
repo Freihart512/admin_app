@@ -1,6 +1,6 @@
 export class UserSummaryRequiredError extends Error {
-  constructor() {
-    super('UserSummary is required');
+  constructor(message = 'User summary is required') {
+    super(message);
     this.name = 'UserSummaryRequiredError';
   }
 }

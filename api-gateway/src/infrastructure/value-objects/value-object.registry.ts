@@ -3,7 +3,6 @@ import { RFC, UUID, Password } from '@domain/@shared/value-objects';
 import { RfcValidator, UuidValidator } from '@infrastructure/validators';
 import { BcryptHashingService } from '@infrastructure/services/bcrypt-hashing.service';
 
-
 /**
  * Infrastructure-side composition root for registering VO validators once.
  */

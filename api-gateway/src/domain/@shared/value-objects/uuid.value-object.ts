@@ -2,6 +2,7 @@
 import { ValueObject } from './base.value-object';
 import { UuidValidatorPort } from '../ports/uuid.validator.port';
 import { InvalidUUIDError } from '../errors/invalid-uuid.error';
+import { ValidatorNotRegisteredError } from '../errors/validator-not-registered.error';
 
 /**
  * UUID value object using a globally-registered validator.
@@ -20,7 +21,7 @@ export class UUID extends ValueObject<string> {
 
   static create(raw: string): UUID {
     if (!UUID.validator) {
-      throw new Error('UUID validator has not been registered');
+      throw new ValidatorNotRegisteredError('uuid');
     }
     return new UUID(raw.toLowerCase());
   }

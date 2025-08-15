@@ -11,9 +11,10 @@ import {
 import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.error';
 import { AppError } from '../errors';
 import { AppErrorCodes } from '../core/types';
+import { ErrorMapperPort } from '@domain/@shared/ports';
 
 @Injectable()
-export class AppErrorMapper {
+export class AppErrorMapper implements ErrorMapperPort {
   map(err: unknown, ctx?: string): never {
     const prefix = ctx ? `[${ctx}] ` : '';
 

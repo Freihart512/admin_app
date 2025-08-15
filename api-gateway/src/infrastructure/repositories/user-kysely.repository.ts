@@ -10,32 +10,34 @@ import { AlreadyValueExistError } from '@domain/user/errors/already-value-exist.
 import { UsersTable, NewUser } from '@infrastructure/database/types';
 
 import { withDbErrorMapping } from '@infrastructure/database/error-mapper';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class KyselyUserRepository implements UserRepository {
   constructor(private readonly db: Kysely<Database> = db) {}
 
- private toPersistence(user: User): NewUser {
-  return {
-    id: user.getId().getValue(),
-    email: user.getEmail().getValue().toLowerCase(),
-    password_hash: user.getPassword().getHashedValue(),
-    is_admin: user.getIsAdmin(),
-    roles: user.getRoles() as unknown,
-    name: user.getName(),
-    last_name: user.getLastName(),
-    phone_number: user.getPhoneNumber()?.getValue() ?? null,
-    address: user.getAddress() ?? null,
-    rfc: user.getRfc()?.getValue().toUpperCase() ?? null,
-    status: user.getStatus(),
+  private toPersistence(user: User): NewUser {
+    return {
+      id: user.getId().getValue(),
+      email: user.getEmail().getValue().toLowerCase(),
+      password_hash: user.getPassword().getHashedValue(),
+      is_admin: user.getIsAdmin(),
+      roles: user.getRoles() as unknown,
+      name: user.getName(),
+      last_name: user.getLastName(),
+      phone_number: user.getPhoneNumber()?.getValue() ?? null,
+      address: user.getAddress() ?? null,
+      rfc: user.getRfc()?.getValue().toUpperCase() ?? null,
+      status: user.getStatus(),
 
-    created_at: undefined,
-    created_by: user.getAudit()?.createdBy?.id.getValue() ?? null,
-    updated_at: undefined,
-    updated_by: user.getAudit()?.updatedBy?.id.getValue() ?? null,
-    deleted_at: undefined,
-    deleted_by: user.getAudit()?.deletedBy?.id.getValue() ?? null,
-  };
-}
+      created_at: undefined,
+      created_by: user.getAudit()?.createdBy?.id.getValue() ?? null,
+      updated_at: undefined,
+      updated_by: user.getAudit()?.updatedBy?.id.getValue() ?? null,
+      deleted_at: undefined,
+      deleted_by: user.getAudit()?.deletedBy?.id.getValue() ?? null,
+    };
+  }
 
   private async isUniqueValueByField<Field extends keyof UsersTable>(
     value: OperandValueExpressionOrList<Database, 'users', Field>,

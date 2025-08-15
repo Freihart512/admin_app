@@ -1,12 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import {
-  InvalidEmailAddressError,
-} from '../invalid-email-address.error';
+import { InvalidEmailAddressError } from '../invalid-email-address.error';
 import { InvalidEmailReasons } from '../';
 
 describe('InvalidEmailAddressError', () => {
   it('should be instance of Error and InvalidEmailAddressError', () => {
-    const error = new InvalidEmailAddressError('invalid@', InvalidEmailReasons.InvalidFormat);
+    const error = new InvalidEmailAddressError(
+      'invalid@',
+      InvalidEmailReasons.InvalidFormat,
+    );
 
     expect(error).toBeInstanceOf(Error);
     expect(error).toBeInstanceOf(InvalidEmailAddressError);
@@ -22,7 +23,10 @@ describe('InvalidEmailAddressError', () => {
   });
 
   it('should set the error name correctly', () => {
-    const error = new InvalidEmailAddressError('user@longdomain.com', InvalidEmailReasons.TooLong);
+    const error = new InvalidEmailAddressError(
+      'user@longdomain.com',
+      InvalidEmailReasons.TooLong,
+    );
     expect(error.name).toBe('InvalidEmailAddress');
   });
 

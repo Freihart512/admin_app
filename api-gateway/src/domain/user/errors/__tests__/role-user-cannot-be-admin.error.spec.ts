@@ -14,7 +14,9 @@ describe('RoleUserCannotBeAdminError', () => {
 
   it('should use the default message when no message is provided', () => {
     const error = new RoleUserCannotBeAdminError();
-    expect(error.message).toBe('User with a business role cannot be an administrator');
+    expect(error.message).toBe(
+      'User with a business role cannot be an administrator',
+    );
   });
 
   it('should use the custom message when provided', () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UUID } from '../uuid.value-object';
 import { InvalidUUIDError } from '../../errors/invalid-uuid.error';
 import type { UuidValidatorPort } from '../../ports/uuid.validator.port';
@@ -14,9 +14,12 @@ function mockValidator(valid: boolean): UuidValidatorPort {
 }
 
 describe('UUID Value Object', () => {
-  it('should create UUID successfully with a valid UUID', () => {
+  beforeEach(() => {
     const validator = mockValidator(true);
     UUID.registerValidator(validator);
+  });
+
+  it('should create UUID successfully with a valid UUID', () => {
     const uuid = UUID.create(validUUID.toUpperCase());
 
     expect(uuid).toBeInstanceOf(UUID);
@@ -34,8 +37,6 @@ describe('UUID Value Object', () => {
   });
 
   it('should consider two UUIDs with the same value as equal', () => {
-    const validator = mockValidator(true);
-    UUID.registerValidator(validator);
     const uuid1 = UUID.create(validUUID);
     const uuid2 = UUID.create(validUUID.toUpperCase());
 
@@ -43,8 +44,6 @@ describe('UUID Value Object', () => {
   });
 
   it('should consider two different UUIDs as not equal', () => {
-    const validator = mockValidator(true);
-    UUID.registerValidator(validator);
     const uuid1 = UUID.create(validUUID);
     const uuid2 = UUID.create('123e4567-e89b-12d3-a456-426614174999');
 

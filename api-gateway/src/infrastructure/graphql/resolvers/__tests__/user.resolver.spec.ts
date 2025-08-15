@@ -1,4 +1,13 @@
-import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  beforeAll,
+  afterEach,
+  afterAll,
+} from 'vitest';
 import { UserResolver } from '../user.resolver';
 import { CreateUserUseCase } from '@application/user/use-cases/create-user.use-case';
 import { CreateUserInput } from '@infrastructure/graphql/dtos/user.graphql.dtos';
@@ -33,11 +42,17 @@ describe('UserResolver', () => {
   let resolver: UserResolver;
   let createUserUseCase: CreateUserUseCase;
 
-  const mockUuidValidator: UuidValidatorPort = { validate: vi.fn().mockReturnValue(true) };
-  const mockRfcValidator: RFCValidatorPort = { validate: vi.fn().mockReturnValue(true) };
+  const mockUuidValidator: UuidValidatorPort = {
+    validate: vi.fn().mockReturnValue(true),
+  };
+  const mockRfcValidator: RFCValidatorPort = {
+    validate: vi.fn().mockReturnValue(true),
+  };
   const mockHashingService: HashingService = {
     hash: vi.fn().mockResolvedValue('hashedpassword'),
     compare: vi.fn().mockResolvedValue(true),
+    // include validateHash to satisfy Password.fromHash
+    validateHash: vi.fn(() => true),
   };
 
   beforeAll(() => {
@@ -51,6 +66,12 @@ describe('UserResolver', () => {
       execute: vi.fn(),
     } as unknown as CreateUserUseCase;
     resolver = new UserResolver(createUserUseCase);
+    // register the hashing service on each test for Password
+    Password.registerHasher(mockHashingService);
+  });
+
+  afterEach(() => {
+    Password.resetForTests();
   });
 
   describe('createUser', () => {
@@ -66,7 +87,7 @@ describe('UserResolver', () => {
       const userEntity = new User({
         id: UUID.create(uuidv4()),
         email: EmailAddress.create('test@example.com'),
-        password: await Password.create('password123!', mockHashingService),
+        password: await Password.create('password123!'),
         name: 'Test',
         lastName: 'User',
         isAdmin: false,
@@ -103,12 +124,12 @@ describe('UserResolver', () => {
     });
 
     it('should throw ServiceUnavailableException on service error', async () => {
-        const input: CreateUserInput = {
-            email: 'test@example.com',
-            name: 'Test',
-            lastName: 'User',
-            roles: [BusinessRole.TENANT],
-          };
+      const input: CreateUserInput = {
+        email: 'test@example.com',
+        name: 'Test',
+        lastName: 'User',
+        roles: [BusinessRole.TENANT],
+      };
 
       vi.spyOn(createUserUseCase, 'execute').mockRejectedValue(
         new ServiceUnavailableError(''),
@@ -120,12 +141,12 @@ describe('UserResolver', () => {
     });
 
     it('should throw BadRequestException on validation error', async () => {
-        const input: CreateUserInput = {
-            email: 'test@example.com',
-            name: 'Test',
-            lastName: 'User',
-            roles: [BusinessRole.TENANT],
-          };
+      const input: CreateUserInput = {
+        email: 'test@example.com',
+        name: 'Test',
+        lastName: 'User',
+        roles: [BusinessRole.TENANT],
+      };
 
       vi.spyOn(createUserUseCase, 'execute').mockRejectedValue(
         new AdminCannotHaveBusinessRolesError(),
@@ -137,12 +158,12 @@ describe('UserResolver', () => {
     });
 
     it('should throw InternalServerErrorException on unexpected error', async () => {
-        const input: CreateUserInput = {
-            email: 'test@example.com',
-            name: 'Test',
-            lastName: 'User',
-            roles: [BusinessRole.TENANT],
-          };
+      const input: CreateUserInput = {
+        email: 'test@example.com',
+        name: 'Test',
+        lastName: 'User',
+        roles: [BusinessRole.TENANT],
+      };
 
       vi.spyOn(createUserUseCase, 'execute').mockRejectedValue(new Error(''));
 

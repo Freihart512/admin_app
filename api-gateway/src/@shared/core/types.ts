@@ -1,6 +1,6 @@
-import { UserSummaryType } from '@domain/user/user.types'
+import { UserSummaryType } from '@domain/user/user.types';
 
- export interface AuditFields {
+export interface AuditFields {
   createdAt: Date | null;
   createdBy: UserSummaryType | null;
   updatedAt: Date | null;
@@ -21,9 +21,9 @@ export type PaginatedResult<T> = {
 };
 
 export type FindPaginatedParams<T> = {
-  filters:T;
+  filters: T;
   paginationOptions: PaginationOptions;
-}
+};
 
 export const AppErrorCodes = {
   ALREADY_EXISTS: 'ALREADY_EXISTS',

@@ -19,14 +19,26 @@ describe('PhoneNumber', () => {
   });
 
   it('should throw if value is not a string', () => {
-    expect(() => PhoneNumber.create(null as unknown as string)).toThrow(InvalidPhoneNumberError);
-    expect(() => PhoneNumber.create(undefined as unknown as string)).toThrow(InvalidPhoneNumberError);
+    expect(() => PhoneNumber.create(null as unknown as string)).toThrow(
+      InvalidPhoneNumberError,
+    );
+    expect(() => PhoneNumber.create(undefined as unknown as string)).toThrow(
+      InvalidPhoneNumberError,
+    );
   });
 
   it('should throw if format is invalid', () => {
-    const invalidPhones = ['abcd', '+12', '123', '++1234567890', '+12345678901234567'];
+    const invalidPhones = [
+      'abcd',
+      '+12',
+      '123',
+      '++1234567890',
+      '+12345678901234567',
+    ];
     for (const invalid of invalidPhones) {
-      expect(() => PhoneNumber.create(invalid)).toThrow(InvalidPhoneNumberError);
+      expect(() => PhoneNumber.create(invalid)).toThrow(
+        InvalidPhoneNumberError,
+      );
     }
   });
 

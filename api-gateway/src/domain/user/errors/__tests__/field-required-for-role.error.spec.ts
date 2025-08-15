@@ -9,7 +9,9 @@ describe('FieldRequiredForRoleError', () => {
 
     expect(error).toBeInstanceOf(Error);
     expect(error.name).toBe('FieldRequiredForRoleError');
-    expect(error.message).toBe(`Field "${fieldName}" is required for user with role: ${requiredRole}`);
+    expect(error.message).toBe(
+      `Field "${fieldName}" is required for user with role: ${requiredRole}`,
+    );
 
     expect(error.fieldName).toBe(fieldName);
     expect(error.requiredRole).toBe(requiredRole);
@@ -20,7 +22,9 @@ describe('FieldRequiredForRoleError', () => {
     const requiredRole = 'TENANT';
     const error = new FieldRequiredForRoleError(fieldName, requiredRole);
 
-    expect(error.message).toBe(`Field "${fieldName}" is required for user with role: ${requiredRole}`);
+    expect(error.message).toBe(
+      `Field "${fieldName}" is required for user with role: ${requiredRole}`,
+    );
     expect(error.fieldName).toBe(fieldName);
     expect(error.requiredRole).toBe(requiredRole);
   });
